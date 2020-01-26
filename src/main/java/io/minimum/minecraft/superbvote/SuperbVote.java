@@ -10,7 +10,6 @@ import io.minimum.minecraft.superbvote.storage.QueuedVotesStorage;
 import io.minimum.minecraft.superbvote.storage.VoteStorage;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.SpigotUpdater;
-import io.minimum.minecraft.superbvote.util.cooldowns.CooldownHandler;
 import io.minimum.minecraft.superbvote.util.cooldowns.VoteServiceCooldown;
 import io.minimum.minecraft.superbvote.votes.SuperbVoteListener;
 import io.minimum.minecraft.superbvote.votes.VoteReminder;
@@ -22,20 +21,30 @@ import java.io.File;
 import java.io.IOException;
 
 public class SuperbVote extends JavaPlugin {
+
+    // Starting to Fork SuperbVote for PvPCraft.cz, will add a lot of comments to clarify things for myself. - W
+
     @Getter
     private static SuperbVote plugin;
+
     @Getter
     private SuperbVoteConfiguration configuration;
+
     @Getter
     private VoteStorage voteStorage;
+
     @Getter
     private QueuedVotesStorage queuedVotes;
+
     @Getter
     private ScoreboardHandler scoreboardHandler;
+
     @Getter
     private VoteServiceCooldown voteServiceCooldown;
+
     @Getter
     private TopPlayerSignStorage topPlayerSignStorage;
+
     private BukkitTask voteReminderTask;
 
     @Override
