@@ -109,13 +109,16 @@ public class SuperbVoteCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "You can't do this.");
                     return true;
                 }
+
                 if (args.length > 2) {
                     sender.sendMessage(ChatColor.RED + "Need to specify at most one argument.");
                     sender.sendMessage(ChatColor.RED + "/sv top [page]");
                     sender.sendMessage(ChatColor.RED + "Shows the top players on the voting leaderboard.");
                     return true;
                 }
+
                 int page;
+
                 try {
                     page = args.length == 2 ? Integer.parseInt(args[1]) - 1 : 0;
                 } catch (NumberFormatException e) {
@@ -136,9 +139,12 @@ public class SuperbVoteCommand implements CommandExecutor {
                     default:
                         Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
                             TextLeaderboardConfiguration config = SuperbVote.getPlugin().getConfiguration().getTextLeaderboardConfiguration();
+
                             int c = config.getPerPage();
                             int from = c * page;
+
                             List<PlayerVotes> leaderboard = SuperbVote.getPlugin().getVoteStorage().getTopVoters(c, page);
+
                             if (leaderboard.isEmpty()) {
                                 sender.sendMessage(ChatColor.RED + "No entries found.");
                                 return;
@@ -171,9 +177,9 @@ public class SuperbVoteCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (args.length != 3) {
-                    sender.sendMessage(ChatColor.RED + "Need to specify two arguments.");
-                    sender.sendMessage(ChatColor.RED + "/sv fakevote <player> <service>");
+                if (args.length < 2) {
+                    sender.sendMessage(ChatColor.RED + "Need to specify one arguments.");
+                    sender.sendMessage(ChatColor.RED + "/sv fakevote <player> [service]");
                     sender.sendMessage(ChatColor.RED + "Issues a fake vote for the specified player.");
                     return true;
                 }
@@ -189,7 +195,10 @@ public class SuperbVoteCommand implements CommandExecutor {
                 vote.setUsername(args[1]);
                 vote.setTimeStamp(new Date().toString());
                 vote.setAddress(FAKE_HOST_NAME_FOR_VOTE);
-                vote.setServiceName(args[2]);
+
+                String serviceName = args.length >= 3 ? args[2] : "Unspecified";
+                vote.setServiceName(serviceName);
+
                 Bukkit.getPluginManager().callEvent(new VotifierEvent(vote));
 
                 sender.sendMessage(ChatColor.GREEN + "You have created a fake vote for " + player.getName() + ".");

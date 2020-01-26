@@ -31,10 +31,19 @@ public class MysqlVoteStorage implements VoteStorage {
     private final String tableName;
     private final boolean readOnly;
 
+    public Connection getConnection() {
+        try {
+            return dbPool.getConnection();
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
     public void initialize() {
         // Load current DB version from disk
         YamlConfiguration dbInfo = YamlConfiguration.loadConfiguration(new File(SuperbVote.getPlugin().getDataFolder(), "db_version.yml"));
         dbInfo.options().header("DO NOT EDIT - SuperbVote internal use");
+
         int ver = dbInfo.getInt("db_version", 1);
         boolean isUpdated = false;
 
@@ -98,6 +107,7 @@ public class MysqlVoteStorage implements VoteStorage {
             if (vote.getName() != null) {
                 try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + " (uuid, last_name, votes, last_vote) VALUES (?, ?, 1, ?)" +
                         " ON DUPLICATE KEY UPDATE votes = votes + 1, last_name = ?, last_vote = ?")) {
+
                     statement.setString(1, vote.getUuid().toString());
                     statement.setString(2, vote.getName());
                     statement.setTimestamp(3, new Timestamp(vote.getReceived().getTime()));
@@ -108,6 +118,7 @@ public class MysqlVoteStorage implements VoteStorage {
             } else {
                 try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + " (uuid, last_name, votes, last_vote) VALUES (?, NULL, 1, ?)" +
                         " ON DUPLICATE KEY UPDATE votes = votes + 1, last_vote = ?")) {
+
                     statement.setString(1, vote.getUuid().toString());
                     statement.setTimestamp(2, new Timestamp(vote.getReceived().getTime()));
                     statement.setTimestamp(3, new Timestamp(vote.getReceived().getTime()));
@@ -196,6 +207,7 @@ public class MysqlVoteStorage implements VoteStorage {
         try (Connection connection = dbPool.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("SELECT uuid, last_name, votes FROM " + tableName + " WHERE votes > 0 ORDER BY votes DESC " +
                     "LIMIT " + amount + " OFFSET " + offset)) {
+
                 try (ResultSet resultSet = statement.executeQuery()) {
                     List<PlayerVotes> records = new ArrayList<>();
                     while (resultSet.next()) {

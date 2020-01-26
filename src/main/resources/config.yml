@@ -16,6 +16,41 @@ storage:
     table: votes
     read-only: false
 
+# Enables top placeholders for API, creates a cache instead of query-ing from the Storage every time.
+top-cache:
+  enabled: true
+  update-cycle: 20
+  players: 10
+  no-player: "&cNone"
+  attempt-load: true
+
+# Offine vote storage, require-online has to be false.
+claim:
+  enabled: true
+  # How many slots have to be empty in player's inventory, or Maximum one can claim at once.
+  inv-space-limit: 10
+  # /sv claim will claim already instead of opening the GUI.
+  use-gui: true
+  gui:
+    title: '&7SV Gather'
+    matrix:
+      - '         '
+      - '    g    '
+      - '        c'
+    items:
+      close:
+        name: '&cClose'
+        lore:
+          - '&7Click to close'
+      filler:
+        name: '&r'
+      gather:
+        name: '&6Claim Storage'
+        lore:
+          - ''
+          - '&7Click to claim offline votes!'
+          - ''
+
 # General vote configuration.
 votes:
   # At least this many seconds must pass before allowing another vote (per-service). This will apply per service.

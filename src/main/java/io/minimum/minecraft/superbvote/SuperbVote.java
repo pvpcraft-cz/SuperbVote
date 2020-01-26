@@ -9,9 +9,9 @@ import io.minimum.minecraft.superbvote.signboard.TopPlayerSignStorage;
 import io.minimum.minecraft.superbvote.storage.QueuedVotesStorage;
 import io.minimum.minecraft.superbvote.storage.VoteStorage;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
-import io.minimum.minecraft.superbvote.util.SpigotUpdater;
 import io.minimum.minecraft.superbvote.util.cooldowns.VoteServiceCooldown;
 import io.minimum.minecraft.superbvote.votes.SuperbVoteListener;
+import io.minimum.minecraft.superbvote.votes.TopVoterCache;
 import io.minimum.minecraft.superbvote.votes.VoteReminder;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +46,14 @@ public class SuperbVote extends JavaPlugin {
     private TopPlayerSignStorage topPlayerSignStorage;
 
     private BukkitTask voteReminderTask;
+
+    private TopVoterCache topVoterCache;
+
+    public TopVoterCache getTopVoterCache() {
+        return topVoterCache;
+    }
+
+    private BukkitTask voteTopUpdateTask;
 
     @Override
     public void onEnable() {
@@ -84,6 +92,7 @@ public class SuperbVote extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new SuperbVoteListener(), this);
         getServer().getPluginManager().registerEvents(new TopPlayerSignListener(), this);
+
         getServer().getScheduler().runTaskTimerAsynchronously(this, voteStorage::save, 20, 20 * 30);
         getServer().getScheduler().runTaskTimerAsynchronously(this, queuedVotes::save, 20, 20 * 30);
         getServer().getScheduler().runTaskAsynchronously(this, SuperbVote.getPlugin().getScoreboardHandler()::doPopulate);
@@ -91,6 +100,7 @@ public class SuperbVote extends JavaPlugin {
 
         int r = getConfig().getInt("vote-reminder.repeat");
         String text = getConfig().getString("vote-reminder.message");
+
         if (text != null && !text.isEmpty()) {
             if (r > 0) {
                 voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(), 20 * r, 20 * r);
@@ -99,11 +109,18 @@ public class SuperbVote extends JavaPlugin {
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("Using clip's PlaceholderAPI to provide extra placeholders.");
-        }
 
-        SpigotUpdater updater = new SpigotUpdater();
-        getServer().getScheduler().runTaskAsynchronously(this, updater);
-        getServer().getPluginManager().registerEvents(updater, this);
+            if (getConfig().getBoolean("top-cache.enabled")) {
+                int updateCycle = getConfig().getInt("top-cache.update-cycle");
+
+                topVoterCache = new TopVoterCache();
+                voteTopUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, topVoterCache, 20 * updateCycle, 20 * updateCycle);
+                getLogger().info("Top Voters cache update cycle started..");
+
+                new SuperbVotePlaceholders().register();
+                getLogger().info("Registered custom placeholders for PAPI.");
+            }
+        }
     }
 
     @Override
@@ -112,9 +129,11 @@ public class SuperbVote extends JavaPlugin {
             voteReminderTask.cancel();
             voteReminderTask = null;
         }
+
         voteStorage.save();
         queuedVotes.save();
         voteStorage.close();
+
         try {
             topPlayerSignStorage.save(new File(getDataFolder(), "top_voter_signs.json"));
         } catch (IOException e) {
@@ -134,8 +153,10 @@ public class SuperbVote extends JavaPlugin {
             voteReminderTask.cancel();
             voteReminderTask = null;
         }
+
         int r = getConfig().getInt("vote-reminder.repeat");
         String text = getConfig().getString("vote-reminder.message");
+
         if (text != null && !text.isEmpty() && r > 0) {
             voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(), 20 * r, 20 * r);
         }

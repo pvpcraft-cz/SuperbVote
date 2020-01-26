@@ -55,14 +55,11 @@ public class TopPlayerSignListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if ((event.getBlockPlaced().getType() == Material.SKELETON_WALL_SKULL ||
-                event.getBlockPlaced().getType() == Material.SKELETON_SKULL) &&
-                        event.getPlayer().hasPermission("superbvote.managesigns")) {
+        if (event.getBlockPlaced().getType() == Material.SKULL && event.getPlayer().hasPermission("superbvote.managesigns")) {
             Block down = event.getBlockPlaced().getRelative(BlockFace.DOWN);
             for (TopPlayerSign sign : SuperbVote.getPlugin().getTopPlayerSignStorage().getSignList()) {
                 for (BlockFace face : TopPlayerSignUpdater.FACES) {
                     if (down.getRelative(face).getLocation().equals(sign.getSign().getBukkitLocation())) {
-                        // We found an adjacent sign. Update so that the change will be reflected.
                         updateSigns();
                     }
                 }
