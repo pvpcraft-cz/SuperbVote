@@ -10,15 +10,18 @@ import io.minimum.minecraft.superbvote.migration.ProgressListener;
 import io.minimum.minecraft.superbvote.migration.SuperbVoteJsonFileMigration;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
+import io.minimum.minecraft.superbvote.util.Configuration;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import io.minimum.minecraft.superbvote.votes.Vote;
 import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.math.BigDecimal;
@@ -30,6 +33,7 @@ public class SuperbVoteCommand implements CommandExecutor {
     private final Map<String, ConfirmingCommand> wantToClear = new HashMap<>();
 
     private void sendHelp(CommandSender s) {
+        // Todo rewrite back to ChatColors, § isn't supported on spigot, paper only.
         s.sendMessage("§8§m--------§7 SuperbVote v.§f" + SuperbVote.getPlugin().getDescription().getVersion() + " §8§m--------");
 
         s.sendMessage("§7/sv votes [player] §8- §7Check your or someone else's vote count." +
@@ -351,13 +355,11 @@ public class SuperbVoteCommand implements CommandExecutor {
                 });
                 return true;
             case "claim":
-
-
                 if (SuperbVote.getPlugin().getConfig().getBoolean("claim.use-gui")) {
-
-
+                    // Todo add GUi with ItemBuilder and such, create a new class to handle that with a listener registered, ref. PvpCraftFactions.
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
+
                         String playerName;
                         UUID uuid;
 
@@ -372,12 +374,45 @@ public class SuperbVoteCommand implements CommandExecutor {
                         PlayerVotes pv = SuperbVote.getPlugin().getVoteStorage().getVotes(uuid);
                         List<Vote> votes = SuperbVote.getPlugin().getQueuedVotes().getAndRemoveVotes(uuid);
 
+                        if (votes.size() == 0) {
+                            sender.sendMessage(ChatColor.RED + "You have no votes to claim.");
+                            return;
+                        }
+
                         int spaceRequired = SuperbVote.getPlugin().getConfig().getInt("claim.inv-space-per-vote");
 
-                        for (Vote v : votes) {
-                            // Todo check player inventory space
-                            SuperbVote.getPlugin().getVoteService().processVote(pv, v, false, false, true);
+                        Iterator<Vote> iter = votes.iterator();
+
+                        int claimed = 0;
+
+                        while (iter.hasNext()) {
+                            if (spaceRequired > countInventorySpace(((Player) sender).getInventory()))
+                                break;
+
+                            Vote v = iter.next();
+
+                            SuperbVote.getPlugin().getVoteService().processVote(pv, v, false, false, true, false);
                             pv = new PlayerVotes(pv.getUuid(), playerName, pv.getVotes() + 1, PlayerVotes.Type.CURRENT);
+
+                            votes.remove(v);
+                            claimed++;
+                        }
+
+                        // Add unclaimed votes back
+                        // Unreliable, but has to do for now, will later replace with a better and separate queued-vote get method. Maybe..
+                        votes.forEach(v -> SuperbVote.getPlugin().getQueuedVotes().addVote(v));
+
+                        Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
+
+                        List<String> msg = cfg.getColoredList("claim.claimed");
+
+                        for (String line : msg) {
+                            line = line.replace("%votes%", String.valueOf(claimed));
+
+                            if (line.contains("%remaining_votes%") && votes.size() != 0)
+                                sender.sendMessage(line.replace("%remaining_votes%", String.valueOf(votes.size())));
+                            else if (!line.contains("%remaining_votes%"))
+                                sender.sendMessage(line);
                         }
                     });
                 }
@@ -388,6 +423,17 @@ public class SuperbVoteCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private int countInventorySpace(Inventory inv) {
+        int n = 0;
+
+        for (int i = 0; i < inv.getSize(); i++) {
+            if (inv.getItem(i) == null || inv.getItem(i).getType().equals(Material.AIR))
+                n++;
+        }
+
+        return n;
     }
 
     @Data

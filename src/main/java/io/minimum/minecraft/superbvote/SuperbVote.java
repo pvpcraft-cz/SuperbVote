@@ -152,6 +152,14 @@ public class SuperbVote extends JavaPlugin {
         configuration = new SuperbVoteConfiguration(getConfig());
         scoreboardHandler.reload();
         voteServiceCooldown = new VoteServiceCooldown(getConfig().getInt("votes.cooldown-per-service", 3600));
+
+        if (getConfig().getBoolean("top-cache.enabled")) {
+            int updateCycle = getConfig().getInt("top-cache.update-cycle");
+
+            voteTopUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, topVoterCache, 20 * updateCycle, 20 * updateCycle);
+            getLogger().info("Top Voters cache update cycle re-started..");
+        }
+
         getServer().getScheduler().runTaskAsynchronously(this, getScoreboardHandler()::doPopulate);
         getCommand("vote").setExecutor(configuration.getVoteCommand());
 

@@ -59,6 +59,9 @@ claim:
   # Reminder message when the player logs in and there are stored votes to claim.
   reminder:
     - '&5SuperbVote &8>> &7You have &e%votes%&7 unclaimed votes!'
+  claimed:
+    - '&5SuperbVote &8>> &7Successfully claimed &e%votes% &7votes.'
+    - '&7There are &e%remaining_votes% &7remaining due to full inventory.'
 
 # General vote configuration.
 votes:

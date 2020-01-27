@@ -136,6 +136,7 @@ public class SuperbVoteConfiguration {
 
     public List<VoteReward> getBestRewards(Vote vote, PlayerVotes pv) {
         List<VoteReward> best = new ArrayList<>();
+
         for (VoteReward reward : rewards) {
             if (reward.getRewardMatchers().stream().allMatch(matcher -> matcher.matches(vote, pv))) {
                 best.add(reward);
