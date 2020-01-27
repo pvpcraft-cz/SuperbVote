@@ -14,7 +14,11 @@ commands:
 permissions:
   superbvote.notify:
     default: true
+  superbvote.claim:
+    default: true
   superbvote.votes.others:
+    default: op
+  superbvote.stored.others:
     default: op
   superbvote.admin:
     default: op

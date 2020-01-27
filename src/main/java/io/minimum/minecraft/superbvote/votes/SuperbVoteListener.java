@@ -7,6 +7,7 @@ import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
 import io.minimum.minecraft.superbvote.storage.MysqlVoteStorage;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
+import io.minimum.minecraft.superbvote.util.Configuration;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import io.minimum.minecraft.superbvote.votes.rewards.VoteReward;
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class SuperbVoteListener implements Listener {
+
     @EventHandler
     public void onVote(final VotifierEvent event) {
         if (SuperbVote.getPlugin().getConfiguration().isConfigurationError()) {
@@ -49,40 +51,13 @@ public class SuperbVoteListener implements Listener {
                 }
             }
 
-            processVote(pv, vote, SuperbVote.getPlugin().getConfig().getBoolean("broadcast.enabled"),
-                    !op.isOnline() && SuperbVote.getPlugin().getConfiguration().requirePlayersOnline(),
+            // If online, process votes already, if offline, store them.
+            // --> If claim is enabled and is set to online: true, store them anyway.
+            SuperbVote.getPlugin().getVoteService().processVote(pv, vote, SuperbVote.getPlugin().getConfig().getBoolean("broadcast.enabled"),
+                    (SuperbVote.getPlugin().getConfig().getBoolean("claim.enabled") && SuperbVote.getPlugin().getConfig().getBoolean("claim.online"))
+                            || (!op.isOnline() && SuperbVote.getPlugin().getConfiguration().requirePlayersOnline()),
                     false);
         });
-    }
-
-    private void processVote(PlayerVotes pv, Vote vote, boolean broadcast, boolean queue, boolean wasQueued) {
-        List<VoteReward> bestRewards = SuperbVote.getPlugin().getConfiguration().getBestRewards(vote, pv);
-        MessageContext context = new MessageContext(vote, pv, Bukkit.getOfflinePlayer(vote.getUuid()));
-
-        if (bestRewards.isEmpty()) {
-            throw new RuntimeException("No vote rewards found for '" + vote + "'");
-        }
-
-        if (queue) {
-            SuperbVote.getPlugin().getLogger().log(Level.INFO, "Queuing vote from " + vote.getName() + " to be run later");
-            for (VoteReward reward : bestRewards) {
-                reward.broadcastVote(context, false, broadcast && SuperbVote.getPlugin().getConfig().getBoolean("broadcast.queued"));
-            }
-            SuperbVote.getPlugin().getQueuedVotes().addVote(vote);
-        } else {
-            if (!vote.isFakeVote() || SuperbVote.getPlugin().getConfig().getBoolean("votes.process-fake-votes")) {
-                SuperbVote.getPlugin().getVoteStorage().addVote(vote);
-            }
-
-            if (!wasQueued) {
-                for (VoteReward reward : bestRewards) {
-                    reward.broadcastVote(context, SuperbVote.getPlugin().getConfig().getBoolean("broadcast.message-player"), broadcast);
-                }
-                Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), this::afterVoteProcessing);
-            }
-
-            Bukkit.getScheduler().runTask(SuperbVote.getPlugin(), () -> bestRewards.forEach(reward -> reward.runCommands(vote)));
-        }
     }
 
     @EventHandler
@@ -96,6 +71,7 @@ public class SuperbVoteListener implements Listener {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
+
             // Update names in MySQL, if it is being used.
             if (SuperbVote.getPlugin().getVoteStorage() instanceof MysqlVoteStorage) {
                 ((MysqlVoteStorage) SuperbVote.getPlugin().getVoteStorage()).updateName(event.getPlayer());
@@ -104,12 +80,24 @@ public class SuperbVoteListener implements Listener {
             // Process queued votes.
             PlayerVotes pv = SuperbVote.getPlugin().getVoteStorage().getVotes(event.getPlayer().getUniqueId());
             List<Vote> votes = SuperbVote.getPlugin().getQueuedVotes().getAndRemoveVotes(event.getPlayer().getUniqueId());
+
             if (!votes.isEmpty()) {
-                for (Vote vote : votes) {
-                    processVote(pv, vote, false, false, true);
-                    pv = new PlayerVotes(pv.getUuid(), event.getPlayer().getName(), pv.getVotes() + 1, PlayerVotes.Type.CURRENT);
+                // Disable if we're using a claim system
+                if (!SuperbVote.getPlugin().getConfig().getBoolean("claim.enabled")) {
+                    for (Vote vote : votes) {
+                        SuperbVote.getPlugin().getVoteService().processVote(pv, vote, false, false, true);
+                        pv = new PlayerVotes(pv.getUuid(), event.getPlayer().getName(), pv.getVotes() + 1, PlayerVotes.Type.CURRENT);
+                    }
+                    SuperbVote.getPlugin().getVoteService().afterVoteProcessing();
+                } else {
+                    // Remind them there are unclaimed rewards waiting for them
+                    // Using a Configuration util for easier string and matrix loading
+                    // Todo Replace with SuperbVoteConfiguration later to remove useless utility classes.
+
+                    Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
+                    event.getPlayer().sendMessage(cfg.getColoredMessage("claim.reminder")
+                            .replaceAll("%votes%", String.valueOf(votes.size())));
                 }
-                afterVoteProcessing();
             }
 
             // Remind players to vote.
@@ -120,11 +108,6 @@ public class SuperbVoteListener implements Listener {
                 SuperbVote.getPlugin().getConfiguration().getReminderMessage().sendAsReminder(event.getPlayer(), context);
             }
         });
-    }
-
-    private void afterVoteProcessing() {
-        SuperbVote.getPlugin().getScoreboardHandler().doPopulate();
-        new TopPlayerSignFetcher(SuperbVote.getPlugin().getTopPlayerSignStorage().getSignList()).run();
     }
 
     @EventHandler

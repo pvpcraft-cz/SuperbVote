@@ -11,6 +11,7 @@ import io.minimum.minecraft.superbvote.migration.SuperbVoteJsonFileMigration;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
+import io.minimum.minecraft.superbvote.votes.Vote;
 import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,41 +21,33 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class SuperbVoteCommand implements CommandExecutor {
     public static final String FAKE_HOST_NAME_FOR_VOTE = UUID.randomUUID().toString();
     private final Map<String, ConfirmingCommand> wantToClear = new HashMap<>();
 
-    private void sendHelp(CommandSender sender) {
-        sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH + "      " +
-                ChatColor.GRAY + " SuperbVote " +
-                ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH + "      ");
+    private void sendHelp(CommandSender s) {
+        s.sendMessage("§8§m--------§7 SuperbVote v.§f" + SuperbVote.getPlugin().getDescription().getVersion() + " §8§m--------");
 
-        sender.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + "/sv votes [player]");
-        sender.sendMessage(ChatColor.GRAY + "Checks your vote amount, or the specified player's.");
+        s.sendMessage("§7/sv votes [player] §8- §7Check your or someone else's vote count." +
+                "\n§7/sv stored [player] §8- §7Check your or someone else's stored vote count.");
 
-        if (sender.hasPermission("superbvote.top") || sender.hasPermission("superbvote.admin")) {
-            sender.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + "/sv top [page]");
-            sender.sendMessage(ChatColor.GRAY + "Shows the top players on the voting leaderboard.");
+        if (s.hasPermission("superbvote.top") || s.hasPermission("superbvote.admin")) {
+            s.sendMessage("§7/sv top [page] §8- §7Displays the top page n.");
         }
 
-        if (sender.hasPermission("superbvote.admin")) {
-            sender.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + "/sv fakevote <player> [service]");
-            sender.sendMessage(ChatColor.GRAY + "Issues a fake vote for the specified player.");
+        if (s.hasPermission("superbvote.claim") || s.hasPermission("superbvote.admin")) {
+            s.sendMessage("§7/sv claim [player] §8- §7Claim your or someone else's stored votes.");
+        }
 
-            sender.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + "/sv migrate <gal>");
-            sender.sendMessage(ChatColor.GRAY + "Migrate votes from another vote plugin.");
-
-            sender.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + "/sv reload");
-            sender.sendMessage(ChatColor.GRAY + "Reloads the plugin's configuration.");
-
-            sender.sendMessage(ChatColor.GRAY + ChatColor.BOLD.toString() + "/sv clear");
-            sender.sendMessage(ChatColor.GRAY + "Clears all stored and queued votes.");
+        if (s.hasPermission("superbvote.admin")) {
+            s.sendMessage("§7/sv fakevote <player> [service] §8- §7Issues a fake vote for the specified player." +
+                    "\n§7/sv migrate <gal> §8- §7Migrate votes from another vote plugin." +
+                    "\n§7/sv reload §8- §7Reloads the plugin's configuration." +
+                    "\n§7/sv clear §8- §7Clear stored votes.");
         }
     }
 
@@ -77,6 +70,7 @@ public class SuperbVoteCommand implements CommandExecutor {
             case "votes":
                 boolean canViewOthersVotes = sender.hasPermission("superbvote.admin") ||
                         sender.hasPermission("superbvote.votes.others");
+
                 Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
                     UUID uuid;
                     String name;
@@ -103,6 +97,42 @@ public class SuperbVoteCommand implements CommandExecutor {
                     }
                     sender.sendMessage(ChatColor.GREEN + name + " has " + SuperbVote.getPlugin().getVoteStorage().getVotes(uuid).getVotes() + " votes.");
                 });
+                return true;
+            case "stored":
+                boolean canViewOthersStored = sender.hasPermission("superbvote.admin") ||
+                        sender.hasPermission("superbvote.stored.others");
+
+                Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
+                    UUID uuid;
+                    String name;
+
+                    if (args.length == 1) {
+                        if (sender instanceof Player) {
+                            uuid = ((Player) sender).getUniqueId();
+                            name = sender.getName();
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "You can't do this unless you're a player!");
+                            return;
+                        }
+                    } else if (args.length == 2) {
+                        if (!canViewOthersStored) {
+                            sender.sendMessage(ChatColor.RED + "You can't do this.");
+                            return;
+                        }
+
+                        uuid = Bukkit.getOfflinePlayer(args[1]).getUniqueId();
+                        name = args[1];
+                    } else {
+
+                        sender.sendMessage(ChatColor.RED + "Need to specify at most one argument.");
+                        sender.sendMessage(ChatColor.RED + "/sv stored [player]");
+                        sender.sendMessage(ChatColor.RED + "Checks your stored vote amount, or the specified player's.");
+                        return;
+                    }
+
+                    sender.sendMessage(ChatColor.GREEN + name + " has " + SuperbVote.getPlugin().getQueuedVotes().getVotes(uuid).size() + " stored votes.");
+                });
+
                 return true;
             case "top":
                 if (!(sender.hasPermission("superbvote.admin") || sender.hasPermission("superbvote.top"))) {
@@ -319,6 +349,38 @@ public class SuperbVoteCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "Migration failed. Check the console for details.");
                     }
                 });
+                return true;
+            case "claim":
+
+
+                if (SuperbVote.getPlugin().getConfig().getBoolean("claim.use-gui")) {
+
+
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
+                        String playerName;
+                        UUID uuid;
+
+                        if (sender instanceof Player) {
+                            uuid = ((Player) sender).getUniqueId();
+                            playerName = sender.getName();
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "You can't do this unless you're a player!");
+                            return;
+                        }
+
+                        PlayerVotes pv = SuperbVote.getPlugin().getVoteStorage().getVotes(uuid);
+                        List<Vote> votes = SuperbVote.getPlugin().getQueuedVotes().getAndRemoveVotes(uuid);
+
+                        int spaceRequired = SuperbVote.getPlugin().getConfig().getInt("claim.inv-space-per-vote");
+
+                        for (Vote v : votes) {
+                            // Todo check player inventory space
+                            SuperbVote.getPlugin().getVoteService().processVote(pv, v, false, false, true);
+                            pv = new PlayerVotes(pv.getUuid(), playerName, pv.getVotes() + 1, PlayerVotes.Type.CURRENT);
+                        }
+                    });
+                }
                 return true;
             default:
                 sendHelp(sender);

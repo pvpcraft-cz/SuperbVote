@@ -13,6 +13,7 @@ import io.minimum.minecraft.superbvote.util.cooldowns.VoteServiceCooldown;
 import io.minimum.minecraft.superbvote.votes.SuperbVoteListener;
 import io.minimum.minecraft.superbvote.votes.TopVoterCache;
 import io.minimum.minecraft.superbvote.votes.VoteReminder;
+import io.minimum.minecraft.superbvote.votes.VoteService;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -44,6 +45,9 @@ public class SuperbVote extends JavaPlugin {
 
     @Getter
     private TopPlayerSignStorage topPlayerSignStorage;
+
+    @Getter
+    private VoteService voteService;
 
     private BukkitTask voteReminderTask;
 
@@ -86,6 +90,8 @@ public class SuperbVote extends JavaPlugin {
         } catch (IOException e) {
             throw new RuntimeException("Exception whilst loading top player signs", e);
         }
+
+        voteService = new VoteService();
 
         getCommand("superbvote").setExecutor(new SuperbVoteCommand());
         getCommand("vote").setExecutor(configuration.getVoteCommand());

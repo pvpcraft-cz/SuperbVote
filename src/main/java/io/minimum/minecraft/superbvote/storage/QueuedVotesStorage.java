@@ -56,6 +56,12 @@ public class QueuedVotesStorage {
         return votes != null ? votes : ImmutableList.of();
     }
 
+    public List<Vote> getVotes(UUID player) {
+        Preconditions.checkNotNull(player, "player");
+        List<Vote> votes = queuedVotes.get(player);
+        return votes != null ? votes : ImmutableList.of();
+    }
+
     public void save() {
         // Save to a temporary file and then copy over the existing file.
         try {

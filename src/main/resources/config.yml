@@ -24,12 +24,18 @@ top-cache:
   no-player: "&cNone"
   attempt-load: true
 
-# Offine vote storage, require-online has to be false.
+# Offine vote storage
 claim:
+  # When a player has queued votes, they have to claim them instead being rewarded on join.
   enabled: true
-  # How many slots have to be empty in player's inventory, or Maximum one can claim at once.
-  inv-space-limit: 10
-  # /sv claim will claim already instead of opening the GUI.
+
+  # Store votes even when the player is online.
+  online: true
+
+  # Inventory space needed per vote.
+  inv-space-per-vote: 10
+
+  # /sv claim will open a gui instead of claiming the rewards.
   use-gui: true
   gui:
     title: '&7SV Gather'
@@ -50,6 +56,9 @@ claim:
           - ''
           - '&7Click to claim offline votes!'
           - ''
+  # Reminder message when the player logs in and there are stored votes to claim.
+  reminder:
+    - '&5SuperbVote &8>> &7You have &e%votes%&7 unclaimed votes!'
 
 # General vote configuration.
 votes:
@@ -69,8 +78,8 @@ rewards:
       chance-percentage: 5
       service: SpecialService
     commands:
-    - give %player% diamond 4
-    - eco give %player% 1000
+      - give %player% diamond 4
+      - eco give %player% 1000
     player-message: "&aThanks for meeting nearly impossible conditions, you have been rewarded with 4 diamonds and $1000."
     broadcast-message: "&a%player% got really lucky and was rewarded with 4 diamonds and $1000!"
   # A default reward is required. Default rewards are defined by using default: true as a matcher. No other matchers can
@@ -78,7 +87,7 @@ rewards:
   - if:
       default: true
     commands:
-    - eco give %player% 1000
+      - eco give %player% 1000
     player-message: "&aThanks for voting for us on %service%, you have been rewarded with $1000."
     broadcast-message: "&a%player% has voted for us on %service% and was rewarded with $1000!"
 
@@ -131,7 +140,7 @@ leaderboard:
 # Control top player signs.
 top-player-signs:
   format:
-  - "#%num%"
-  - ""
-  - "%player%"
-  - "&l%votes% &rvotes"
+    - "#%num%"
+    - ""
+    - "%player%"
+    - "&l%votes% &rvotes"
