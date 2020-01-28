@@ -1,6 +1,7 @@
 package io.minimum.minecraft.superbvote;
 
 import io.minimum.minecraft.superbvote.commands.SuperbVoteCommand;
+import io.minimum.minecraft.superbvote.commands.gui.ClaimGUI;
 import io.minimum.minecraft.superbvote.configuration.SuperbVoteConfiguration;
 import io.minimum.minecraft.superbvote.scoreboard.ScoreboardHandler;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
@@ -98,6 +99,7 @@ public class SuperbVote extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new SuperbVoteListener(), this);
         getServer().getPluginManager().registerEvents(new TopPlayerSignListener(), this);
+        getServer().getPluginManager().registerEvents(new ClaimGUI(), this);
 
         getServer().getScheduler().runTaskTimerAsynchronously(this, voteStorage::save, 20, 20 * 30);
         getServer().getScheduler().runTaskTimerAsynchronously(this, queuedVotes::save, 20, 20 * 30);

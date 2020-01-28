@@ -39,6 +39,11 @@ public class SuperbVotePlaceholders extends PlaceholderExpansion {
                     return "";
 
                 return String.valueOf(SuperbVote.getPlugin().getVoteStorage().getVotes(p.getUniqueId()).getVotes());
+            } else if (arr[0].equalsIgnoreCase("stored")) {
+                if (p == null)
+                    return "";
+
+                return String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(p.getUniqueId()).size());
             } else {
                 if (arr.length < 3)
                     return "not_enough_args";

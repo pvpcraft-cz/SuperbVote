@@ -65,11 +65,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
-            <systemPath>${basedir}/lib/paper-1.8.8.jar</systemPath>
+            <groupId>org.spigot</groupId>
+            <artifactId>Spigot</artifactId>
+            <version>1.15.2</version>
             <scope>system</scope>
+            <systemPath>${basedir}/lib/spigot-1.15.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.spigot</groupId>
+            <artifactId>Spigot</artifactId>
+            <version>1.8.8</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/spigot-1.8.8.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

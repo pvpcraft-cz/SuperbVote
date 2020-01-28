@@ -54,7 +54,7 @@ claim:
         name: '&6Claim Storage'
         lore:
           - ''
-          - '&7Click to claim offline votes!'
+          - '&7Click to claim &e%votes% &7offline votes!'
           - ''
   # Reminder message when the player logs in and there are stored votes to claim.
   reminder:

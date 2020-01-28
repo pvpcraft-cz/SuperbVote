@@ -2,6 +2,7 @@ package io.minimum.minecraft.superbvote.commands;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
 import io.minimum.minecraft.superbvote.SuperbVote;
+import io.minimum.minecraft.superbvote.commands.gui.ClaimGUI;
 import io.minimum.minecraft.superbvote.configuration.TextLeaderboardConfiguration;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.migration.GAListenerMigration;
@@ -32,26 +33,27 @@ public class SuperbVoteCommand implements CommandExecutor {
     public static final String FAKE_HOST_NAME_FOR_VOTE = UUID.randomUUID().toString();
     private final Map<String, ConfirmingCommand> wantToClear = new HashMap<>();
 
-    private void sendHelp(CommandSender s) {
-        // Todo rewrite back to ChatColors, § isn't supported on spigot, paper only.
-        s.sendMessage("§8§m--------§7 SuperbVote v.§f" + SuperbVote.getPlugin().getDescription().getVersion() + " §8§m--------");
+    private String color(String msg) { return ChatColor.translateAlternateColorCodes('&', msg); }
 
-        s.sendMessage("§7/sv votes [player] §8- §7Check your or someone else's vote count." +
-                "\n§7/sv stored [player] §8- §7Check your or someone else's stored vote count.");
+    private void sendHelp(CommandSender s) {
+        s.sendMessage(color("&8&m--------&7 SuperbVote v.&f" + SuperbVote.getPlugin().getDescription().getVersion() + " &8&m--------"));
+
+        s.sendMessage(color("&7/sv votes [player] &8- &7Check your or someone else's vote count." +
+                "\n§7/sv stored [player] §8- §7Check your or someone else's stored vote count."));
 
         if (s.hasPermission("superbvote.top") || s.hasPermission("superbvote.admin")) {
-            s.sendMessage("§7/sv top [page] §8- §7Displays the top page n.");
+            s.sendMessage(color("&7/sv top [page] &8- &7Displays the top page n."));
         }
 
         if (s.hasPermission("superbvote.claim") || s.hasPermission("superbvote.admin")) {
-            s.sendMessage("§7/sv claim [player] §8- §7Claim your or someone else's stored votes.");
+            s.sendMessage(color("&7/sv claim [player] &8- &7Claim your or someone else's stored votes."));
         }
 
         if (s.hasPermission("superbvote.admin")) {
-            s.sendMessage("§7/sv fakevote <player> [service] §8- §7Issues a fake vote for the specified player." +
-                    "\n§7/sv migrate <gal> §8- §7Migrate votes from another vote plugin." +
-                    "\n§7/sv reload §8- §7Reloads the plugin's configuration." +
-                    "\n§7/sv clear §8- §7Clear stored votes.");
+            s.sendMessage(color("&7/sv fakevote <player> [service] &8- §7Issues a fake vote for the specified player." +
+                    "\n&7/sv migrate <gal> &8- &7Migrate votes from another vote plugin." +
+                    "\n&7/sv reload &8- &7Reloads the plugin's configuration." +
+                    "\n&7/sv clear &8- &7Clear stored votes."));
         }
     }
 
@@ -356,7 +358,21 @@ public class SuperbVoteCommand implements CommandExecutor {
                 return true;
             case "claim":
                 if (SuperbVote.getPlugin().getConfig().getBoolean("claim.use-gui")) {
-                    // Todo add GUi with ItemBuilder and such, create a new class to handle that with a listener registered, ref. PvpCraftFactions.
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage(ChatColor.RED + "You have to be a player in order to do this.");
+                        return true;
+                    }
+
+                    if (!sender.hasPermission("superbvote.claim")) {
+                        sender.sendMessage(ChatColor.RED + "You have no permission to do this!");
+                        return true;
+                    }
+
+                    player = (Player) sender;
+
+                    ClaimGUI claimGUI = new ClaimGUI();
+                    claimGUI.build(player);
+                    claimGUI.open();
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
 
