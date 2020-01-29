@@ -39,7 +39,7 @@ public class SuperbVoteCommand implements CommandExecutor {
         s.sendMessage(color("&8&m--------&7 SuperbVote v.&f" + SuperbVote.getPlugin().getDescription().getVersion() + " &8&m--------"));
 
         s.sendMessage(color("&7/sv votes [player] &8- &7Check your or someone else's vote count." +
-                "\n§7/sv stored [player] §8- §7Check your or someone else's stored vote count."));
+                "\n&7/sv stored [player] &8- &7Check your or someone else's stored vote count."));
 
         if (s.hasPermission("superbvote.top") || s.hasPermission("superbvote.admin")) {
             s.sendMessage(color("&7/sv top [page] &8- &7Displays the top page n."));
