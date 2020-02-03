@@ -51,12 +51,21 @@ public class SuperbVoteListener implements Listener {
                 }
             }
 
+            boolean queue;
+
+            if (SuperbVote.getPlugin().getConfig().getBoolean("claim.enabled")) {
+                if (op.isOnline()) {
+                    queue = SuperbVote.getPlugin().getConfig().getBoolean("claim.online");
+                } else queue = false;
+            } else {
+                queue = (!op.isOnline() && SuperbVote.getPlugin().getConfiguration().requirePlayersOnline());
+            }
+
             // If online, process votes already, if offline, store them.
             // --> If claim is enabled and is set to online: true, store them anyway.
             SuperbVote.getPlugin().getVoteService().processVote(pv, vote,
                     SuperbVote.getPlugin().getConfig().getBoolean("broadcast.enabled"),
-                    (SuperbVote.getPlugin().getConfig().getBoolean("claim.enabled") && SuperbVote.getPlugin().getConfig().getBoolean("claim.online"))
-                            || (!op.isOnline() && SuperbVote.getPlugin().getConfiguration().requirePlayersOnline()),
+                    queue,
                     false, true);
         });
     }
