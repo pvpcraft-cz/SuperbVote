@@ -21,12 +21,13 @@ public class VoteService {
         }
 
         if (queue) {
-            SuperbVote.getPlugin().getLogger().log(Level.INFO, "Queuing vote from " + vote.getName() + " to be run later, but adding a vote for him.");
+            SuperbVote.getPlugin().getLogger().log(Level.INFO, "Saving a vote from " + vote.getName() + " to be run later, but adding a vote for him.");
 
             for (VoteReward reward : bestRewards) {
                 reward.broadcastVote(context, false, broadcast && SuperbVote.getPlugin().getConfig().getBoolean("broadcast.queued"));
             }
 
+            // Add to Queue and to Storage
             SuperbVote.getPlugin().getQueuedVotes().addVote(vote);
             SuperbVote.getPlugin().getVoteStorage().addVote(vote);
 

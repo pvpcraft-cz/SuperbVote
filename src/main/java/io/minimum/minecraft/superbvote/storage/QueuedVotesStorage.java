@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.votes.Vote;
 
 import java.io.*;
@@ -44,6 +45,8 @@ public class QueuedVotesStorage {
         Preconditions.checkNotNull(vote, "votes");
         List<Vote> votes = queuedVotes.computeIfAbsent(vote.getUuid(), (ignored) -> new CopyOnWriteArrayList<>());
         votes.add(vote);
+
+        SuperbVote.getPlugin().getLogger().info("Adding a vote to storage for " + vote.getName());
     }
 
     public void clearVotes() {

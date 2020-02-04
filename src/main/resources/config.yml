@@ -30,13 +30,13 @@ claim:
   enabled: true
 
   # Store votes even when the player is online.
-  online: true
+  online: false
 
   # Inventory space needed per vote.
-  inv-space-per-vote: 10
+  inv-space-per-vote: 1
 
   # /sv claim will open a gui instead of claiming the rewards.
-  use-gui: true
+  use-gui: false
   gui:
     title: '&7SV Gather'
     matrix:
@@ -62,6 +62,8 @@ claim:
   claimed:
     - '&5SuperbVote &8>> &7Successfully claimed &e%votes% &7votes.'
     - '&7There are &e%remaining_votes% &7remaining due to full inventory.'
+  stored:
+    - '&5SuperbVote &8>> &e%player% &7has &e%votes% &7stored votes.'
 
 # General vote configuration.
 votes:

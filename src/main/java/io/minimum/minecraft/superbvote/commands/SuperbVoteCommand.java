@@ -18,6 +18,7 @@ import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +34,9 @@ public class SuperbVoteCommand implements CommandExecutor {
     public static final String FAKE_HOST_NAME_FOR_VOTE = UUID.randomUUID().toString();
     private final Map<String, ConfirmingCommand> wantToClear = new HashMap<>();
 
-    private String color(String msg) { return ChatColor.translateAlternateColorCodes('&', msg); }
+    private String color(String msg) {
+        return ChatColor.translateAlternateColorCodes('&', msg);
+    }
 
     private void sendHelp(CommandSender s) {
         s.sendMessage(color("&8&m--------&7 SuperbVote v.&f" + SuperbVote.getPlugin().getDescription().getVersion() + " &8&m--------"));
@@ -136,7 +139,11 @@ public class SuperbVoteCommand implements CommandExecutor {
                         return;
                     }
 
-                    sender.sendMessage(ChatColor.GREEN + name + " has " + SuperbVote.getPlugin().getQueuedVotes().getVotes(uuid).size() + " stored votes.");
+                    Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
+
+                    sender.sendMessage(cfg.getColoredMessage("claim.stored")
+                            .replaceAll("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(uuid).size()))
+                            .replaceAll("%player%", name));
                 });
 
                 return true;
@@ -220,15 +227,15 @@ public class SuperbVoteCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player player = Bukkit.getPlayer(args[1]);
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
 
-                if (player == null) {
+                if (offlinePlayer == null) {
                     sender.sendMessage(ChatColor.RED + "That player was not found.");
                     return true;
                 }
 
                 com.vexsoftware.votifier.model.Vote vote = new com.vexsoftware.votifier.model.Vote();
-                vote.setUsername(args[1]);
+                vote.setUsername(offlinePlayer.getName());
                 vote.setTimeStamp(new Date().toString());
                 vote.setAddress(FAKE_HOST_NAME_FOR_VOTE);
 
@@ -237,7 +244,7 @@ public class SuperbVoteCommand implements CommandExecutor {
 
                 Bukkit.getPluginManager().callEvent(new VotifierEvent(vote));
 
-                sender.sendMessage(ChatColor.GREEN + "You have created a fake vote for " + player.getName() + ".");
+                sender.sendMessage(ChatColor.GREEN + "You have created a fake vote for " + offlinePlayer.getName() + ".");
                 break;
             case "reload":
                 if (!sender.hasPermission("superbvote.admin")) {
@@ -368,7 +375,7 @@ public class SuperbVoteCommand implements CommandExecutor {
                         return true;
                     }
 
-                    player = (Player) sender;
+                    Player player = (Player) sender;
 
                     ClaimGUI claimGUI = new ClaimGUI();
                     claimGUI.build(player);
