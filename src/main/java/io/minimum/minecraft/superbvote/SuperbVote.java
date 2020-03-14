@@ -18,6 +18,7 @@ import io.minimum.minecraft.superbvote.votes.VoteService;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import space.devport.utils.DevportUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +66,7 @@ public class SuperbVote extends JavaPlugin {
         plugin = this;
         saveDefaultConfig();
         configuration = new SuperbVoteConfiguration(getConfig());
+        new DevportUtils(this);
 
         if (configuration.isConfigurationError()) {
             BrokenNag.nag(getServer().getConsoleSender());

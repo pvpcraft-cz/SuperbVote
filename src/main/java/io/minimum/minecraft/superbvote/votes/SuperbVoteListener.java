@@ -6,7 +6,6 @@ import io.minimum.minecraft.superbvote.commands.SuperbVoteCommand;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.storage.MysqlVoteStorage;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
-import io.minimum.minecraft.superbvote.util.Configuration;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -15,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import space.devport.utils.configutil.Configuration;
 
 import java.util.Date;
 import java.util.List;
@@ -107,8 +107,6 @@ public class SuperbVoteListener implements Listener {
                     SuperbVote.getPlugin().getVoteService().afterVoteProcessing();
                 } else {
                     // Remind them there are unclaimed rewards waiting for them.
-                    // Using a Configuration util for easier string and matrix loading.
-                    // Todo Replace with SuperbVoteConfiguration later to remove useless utility classes.
 
                     Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
                     event.getPlayer().sendMessage(cfg.getColoredMessage("claim.reminder")

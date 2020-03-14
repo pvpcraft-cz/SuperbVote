@@ -11,7 +11,6 @@ import io.minimum.minecraft.superbvote.migration.ProgressListener;
 import io.minimum.minecraft.superbvote.migration.SuperbVoteJsonFileMigration;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
-import io.minimum.minecraft.superbvote.util.Configuration;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import io.minimum.minecraft.superbvote.votes.Vote;
 import lombok.Data;
@@ -25,6 +24,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import space.devport.utils.configutil.Configuration;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -53,7 +54,7 @@ public class SuperbVoteCommand implements CommandExecutor {
         }
 
         if (s.hasPermission("superbvote.admin")) {
-            s.sendMessage(color("&7/sv fakevote <player> [service] &8- §7Issues a fake vote for the specified player." +
+            s.sendMessage(color("&7/sv fakevote <player> [service] &8- &7Issues a fake vote for the specified player." +
                     "\n&7/sv migrate <gal> &8- &7Migrate votes from another vote plugin." +
                     "\n&7/sv reload &8- &7Reloads the plugin's configuration." +
                     "\n&7/sv clear &8- &7Clear stored votes."));
@@ -61,7 +62,7 @@ public class SuperbVoteCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (SuperbVote.getPlugin().getConfiguration().isConfigurationError()) {
             // Nag, except on /sv reload.
             if (!sender.hasPermission("superbvote.admin") || !(args.length == 1 && args[0].equals("reload"))) {

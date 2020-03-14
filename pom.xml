@@ -61,22 +61,22 @@
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>devportutils</id>
+            <url>http://play.pvpcraft.cz:8081/repository/devportutils/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigot</groupId>
-            <artifactId>Spigot</artifactId>
-            <version>1.15.2</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/spigot-1.15.2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.spigot</groupId>
-            <artifactId>Spigot</artifactId>
-            <version>1.8.8</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/spigot-1.8.8.jar</systemPath>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -106,8 +106,24 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>5.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>17.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>DevportUtils</artifactId>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,9 +1,6 @@
 package io.minimum.minecraft.superbvote.commands.gui;
 
 import io.minimum.minecraft.superbvote.SuperbVote;
-import io.minimum.minecraft.superbvote.util.Configuration;
-import io.minimum.minecraft.superbvote.util.ItemBuilder;
-import io.minimum.minecraft.superbvote.util.NBTEditor;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import io.minimum.minecraft.superbvote.votes.Vote;
 import org.bukkit.Bukkit;
@@ -15,6 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import space.devport.utils.configutil.Configuration;
+import space.devport.utils.itemutil.ItemBuilder;
+import space.devport.utils.itemutil.ItemNBTEditor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class ClaimGUI implements Listener {
 
-    private Configuration config;
+    private final Configuration config;
     private Player player;
     private Inventory inv;
 
@@ -38,19 +38,19 @@ public class ClaimGUI implements Listener {
     public void build(Player player) {
         this.player = player;
 
-        inv = Bukkit.createInventory(null, config.getYaml().getInt("claim.gui.size"), config.getColored("claim.gui.title"));
+        inv = Bukkit.createInventory(null, config.getFileConfiguration().getInt("claim.gui.size"), config.getColored("claim.gui.title"));
 
         // Start building the items by matrix.
-        String[] matrix = config.getMatrix("claim.gui.matrix");
+        String[] matrix = config.getArray("claim.gui.matrix");
 
         // Prepare builders
-        ItemBuilder closeBuild = ItemBuilder.loadBuilder(config.getYaml(), "claim.gui.items.close")
+        ItemBuilder closeBuild = config.loadItemBuilder("claim.gui.items.close")
                 .addNBT("superbvote_gui", "close")
                 .parse("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size()));
-        ItemBuilder fillerBuild = ItemBuilder.loadBuilder(config.getYaml(), "claim.gui.items.filler")
+        ItemBuilder fillerBuild = config.loadItemBuilder("claim.gui.items.filler")
                 .addNBT("superbvote_gui", "filler")
                 .parse("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size()));
-        ItemBuilder gatherBuild = ItemBuilder.loadBuilder(config.getYaml(), "claim.gui.items.gather")
+        ItemBuilder gatherBuild = config.loadItemBuilder("claim.gui.items.gather")
                 .addNBT("superbvote_gui", "gather")
                 .parse("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size()));
 
@@ -79,7 +79,7 @@ public class ClaimGUI implements Listener {
     public void onClick(InventoryClickEvent e) {
 
         // Filter nulls
-        if (e.getCurrentItem() == null || e.getCursor() == null || e.getInventory() == null || e.getWhoClicked() == null)
+        if (e.getCurrentItem() == null || e.getCursor() == null || e.getClickedInventory() == null)
             return;
 
         // Check inv
@@ -89,13 +89,13 @@ public class ClaimGUI implements Listener {
 
             ItemStack item = e.getCurrentItem();
 
-            if (!NBTEditor.hasNBT(item))
+            if (!ItemNBTEditor.hasNBT(item))
                 return;
 
-            if (!NBTEditor.hasNBTTag(item, "superbvote"))
+            if (!ItemNBTEditor.hasNBTKey(item, "superbvote"))
                 return;
 
-            String value = NBTEditor.getNBT(item, "superbvote");
+            String value = ItemNBTEditor.getNBT(item, "superbvote");
 
             switch (value.trim().toLowerCase()) {
                 case "gather":

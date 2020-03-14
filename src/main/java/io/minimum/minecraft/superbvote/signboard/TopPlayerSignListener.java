@@ -1,10 +1,11 @@
 package io.minimum.minecraft.superbvote.signboard;
 
+import com.cryptomorin.xseries.XBlock;
+import com.cryptomorin.xseries.XMaterial;
 import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.util.SerializableLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -55,11 +56,18 @@ public class TopPlayerSignListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getBlockPlaced().getType() == Material.SKULL && event.getPlayer().hasPermission("superbvote.managesigns")) {
+
+        Block blockPlaced = event.getBlockPlaced();
+
+        if ((XBlock.isType(blockPlaced, XMaterial.SKELETON_WALL_SKULL) ||
+                XBlock.isType(blockPlaced, XMaterial.SKELETON_SKULL)) &&
+                event.getPlayer().hasPermission("superbvote.managesigns")) {
+
             Block down = event.getBlockPlaced().getRelative(BlockFace.DOWN);
             for (TopPlayerSign sign : SuperbVote.getPlugin().getTopPlayerSignStorage().getSignList()) {
                 for (BlockFace face : TopPlayerSignUpdater.FACES) {
                     if (down.getRelative(face).getLocation().equals(sign.getSign().getBukkitLocation())) {
+                        // We found an adjacent sign. Update so that the change will be reflected.
                         updateSigns();
                     }
                 }
