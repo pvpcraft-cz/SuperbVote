@@ -11,6 +11,7 @@ import space.devport.utils.utility.TimeElement;
 import space.devport.utils.utility.TimeUtil;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -94,9 +95,7 @@ public class SuperbVotePlaceholders extends PlaceholderExpansion {
 
                 if (time == null) return "0";
 
-                long until = (LocalDateTime.now().getNano() - time.getNano()) / 1000;
-
-                Bukkit.getLogger().info("Passing " + until + "millis.");
+                long until = time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis();
 
                 return String.valueOf(TimeUtil.takeElement(until, element, start));
             case "canvote":
