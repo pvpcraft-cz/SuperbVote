@@ -44,7 +44,7 @@ public class SuperbVoteListener implements Listener {
             Vote vote = new Vote(offlinePlayer.getName(), offlinePlayer.getUniqueId(), event.getVote().getServiceName(),
                     event.getVote().getAddress().equals(SuperbVoteCommand.FAKE_HOST_NAME_FOR_VOTE), worldName, new Date());
 
-            if (!vote.isFakeVote()) {
+            if (!vote.isFakeVote() || SuperbVote.getPlugin().getConfig().getBoolean("votes.process-fake-votes")) {
                 if (SuperbVote.getPlugin().getVoteServiceCooldown().triggerCooldown(vote)) {
                     SuperbVote.getPlugin().getLogger().log(Level.WARNING, "Ignoring vote from " + vote.getName() + " (service: " +
                             vote.getServiceName() + ") due to service cooldown.");
