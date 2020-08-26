@@ -3,6 +3,7 @@ package io.minimum.minecraft.superbvote;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -95,9 +96,11 @@ public class SuperbVotePlaceholders extends PlaceholderExpansion {
 
                 long until = (LocalDateTime.now().getNano() - time.getNano()) / 1000;
 
+                Bukkit.getLogger().info("Passing " + until + "millis.");
+
                 return String.valueOf(TimeUtil.takeElement(until, element, start));
             case "canvote":
-                return SuperbVote.getPlugin().getVoteServiceCooldown().getTime(player.getUniqueId()) != null ? "yes" : "no";
+                return SuperbVote.getPlugin().getVoteServiceCooldown().canVote(player.getUniqueId()) ? "yes" : "no";
         }
 
         return null;

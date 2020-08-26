@@ -19,7 +19,6 @@ import space.devport.utils.text.message.Message;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SuperbVoteListener implements Listener {
 
@@ -46,9 +45,7 @@ public class SuperbVoteListener implements Listener {
 
             if (!vote.isFakeVote() || SuperbVote.getPlugin().getConfig().getBoolean("votes.process-fake-votes")) {
                 if (SuperbVote.getPlugin().getVoteServiceCooldown().triggerCooldown(vote)) {
-                    SuperbVote.getPlugin().getLogger().log(Level.WARNING, "Ignoring vote from " + vote.getName() + " (service: " +
-                            vote.getServiceName() + ") due to service cooldown.");
-                    return;
+                    Bukkit.getLogger().info("Started service cooldown for " + vote.getName());
                 }
             }
 

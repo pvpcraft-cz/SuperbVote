@@ -231,18 +231,10 @@ public class SuperbVoteCommand implements CommandExecutor {
 
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
 
-                if (offlinePlayer == null) {
-                    sender.sendMessage(ChatColor.RED + "That player was not found.");
-                    return true;
-                }
-
-                com.vexsoftware.votifier.model.Vote vote = new com.vexsoftware.votifier.model.Vote();
-                vote.setUsername(offlinePlayer.getName());
-                vote.setTimeStamp(new Date().toString());
-                vote.setAddress(FAKE_HOST_NAME_FOR_VOTE);
-
-                String serviceName = args.length >= 3 ? args[2] : "Unspecified";
-                vote.setServiceName(serviceName);
+                com.vexsoftware.votifier.model.Vote vote = new com.vexsoftware.votifier.model.Vote(args.length >= 3 ? args[2] : "Unspecified",
+                        offlinePlayer.getName(),
+                        FAKE_HOST_NAME_FOR_VOTE,
+                        new Date().toString());
 
                 Bukkit.getPluginManager().callEvent(new VotifierEvent(vote));
 
