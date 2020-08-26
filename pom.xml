@@ -6,7 +6,7 @@
 
     <groupId>io.minimum.minecraft</groupId>
     <artifactId>SuperbVote</artifactId>
-    <version>0.6.1</version>
+    <version>0.6.2</version>
 
     <name>SuperbVote</name>
 
@@ -41,6 +41,10 @@
                         <relocation>
                             <pattern>org.slf4j</pattern>
                             <shadedPattern>io.minimum.minecraft.superbvote.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>space.devport.utils</pattern>
+                            <shadedPattern>io.minimum.minecraft.superbvote.utils</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
