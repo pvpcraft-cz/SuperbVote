@@ -14,7 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import space.devport.utils.configutil.Configuration;
+import space.devport.utils.configuration.Configuration;
+import space.devport.utils.text.message.Message;
 
 import java.util.Date;
 import java.util.List;
@@ -109,8 +110,10 @@ public class SuperbVoteListener implements Listener {
                     // Remind them there are unclaimed rewards waiting for them.
 
                     Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
-                    event.getPlayer().sendMessage(cfg.getColoredMessage("claim.reminder")
-                            .replaceAll("%votes%", String.valueOf(votes.size())));
+
+                    cfg.getMessage("claim.reminder", new Message())
+                            .replace("%votes%", votes.size())
+                            .send(event.getPlayer());
                 }
             }
 

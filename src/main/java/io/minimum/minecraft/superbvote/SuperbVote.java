@@ -18,14 +18,11 @@ import io.minimum.minecraft.superbvote.votes.VoteService;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import space.devport.utils.DevportUtils;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SuperbVote extends JavaPlugin {
-
-    // Starting to Fork SuperbVote for PvPCraft.cz, will add a lot of comments to clarify things for myself. - W
 
     @Getter
     private static SuperbVote plugin;
@@ -65,8 +62,8 @@ public class SuperbVote extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         saveDefaultConfig();
+
         configuration = new SuperbVoteConfiguration(getConfig());
-        new DevportUtils(this);
 
         if (configuration.isConfigurationError()) {
             BrokenNag.nag(getServer().getConsoleSender());
@@ -127,7 +124,7 @@ public class SuperbVote extends JavaPlugin {
                 voteTopUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, topVoterCache, 20 * updateCycle, 20 * updateCycle);
                 getLogger().info("Top Voters cache update cycle started..");
 
-                new SuperbVotePlaceholders().register();
+                new SuperbVotePlaceholders(this).register();
                 getLogger().info("Registered custom placeholders for PAPI.");
             }
         }

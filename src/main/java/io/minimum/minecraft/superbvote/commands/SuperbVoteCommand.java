@@ -25,7 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.configutil.Configuration;
+import space.devport.utils.configuration.Configuration;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -142,9 +142,10 @@ public class SuperbVoteCommand implements CommandExecutor {
 
                     Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
 
-                    sender.sendMessage(cfg.getColoredMessage("claim.stored")
-                            .replaceAll("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(uuid).size()))
-                            .replaceAll("%player%", name));
+                    cfg.getMessage("claim.stored")
+                            .replace("%votes%", SuperbVote.getPlugin().getQueuedVotes().getVotes(uuid).size())
+                            .replace("%player%", name)
+                            .send(sender);
                 });
 
                 return true;

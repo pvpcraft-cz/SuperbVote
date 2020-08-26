@@ -12,9 +12,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import space.devport.utils.configutil.Configuration;
-import space.devport.utils.itemutil.ItemBuilder;
-import space.devport.utils.itemutil.ItemNBTEditor;
+import space.devport.utils.configuration.Configuration;
+import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.ItemNBTEditor;
+import space.devport.utils.text.Placeholders;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,12 +23,16 @@ import java.util.UUID;
 
 public class ClaimGUI implements Listener {
 
+    private final SuperbVote plugin;
+
     private final Configuration config;
+
     private Player player;
     private Inventory inv;
 
     public ClaimGUI() {
-        config = new Configuration(SuperbVote.getPlugin(), "config");
+        this.plugin = SuperbVote.getPlugin();
+        this.config = new Configuration(SuperbVote.getPlugin(), "config");
     }
 
     public void open() {
@@ -38,21 +43,24 @@ public class ClaimGUI implements Listener {
     public void build(Player player) {
         this.player = player;
 
-        inv = Bukkit.createInventory(null, config.getFileConfiguration().getInt("claim.gui.size"), config.getColored("claim.gui.title"));
+        inv = Bukkit.createInventory(null, config.getFileConfiguration().getInt("claim.gui.size"), config.getColoredString("claim.gui.title", "&r"));
 
         // Start building the items by matrix.
-        String[] matrix = config.getArray("claim.gui.matrix");
+        String[] matrix = config.getArrayList("claim.gui.matrix");
+
+        Placeholders placeholders = new Placeholders()
+                .add("%votes%", SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size());
 
         // Prepare builders
-        ItemBuilder closeBuild = config.loadItemBuilder("claim.gui.items.close")
+        ItemBuilder closeBuild = config.getItemBuilder("claim.gui.items.close", new ItemBuilder(Material.AIR))
                 .addNBT("superbvote_gui", "close")
-                .parse("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size()));
-        ItemBuilder fillerBuild = config.loadItemBuilder("claim.gui.items.filler")
+                .parseWith(placeholders);
+        ItemBuilder fillerBuild = config.getItemBuilder("claim.gui.items.filler", new ItemBuilder(Material.AIR))
                 .addNBT("superbvote_gui", "filler")
-                .parse("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size()));
-        ItemBuilder gatherBuild = config.loadItemBuilder("claim.gui.items.gather")
+                .parseWith(placeholders);
+        ItemBuilder gatherBuild = config.getItemBuilder("claim.gui.items.gather", new ItemBuilder(Material.AIR))
                 .addNBT("superbvote_gui", "gather")
-                .parse("%votes%", String.valueOf(SuperbVote.getPlugin().getQueuedVotes().getVotes(player.getUniqueId()).size()));
+                .parseWith(placeholders);
 
         int slot = 0;
 
