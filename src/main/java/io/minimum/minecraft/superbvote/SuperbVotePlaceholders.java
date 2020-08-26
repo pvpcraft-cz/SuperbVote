@@ -6,7 +6,10 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.utility.TimeElement;
+import space.devport.utils.utility.TimeUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -75,6 +78,26 @@ public class SuperbVotePlaceholders extends PlaceholderExpansion {
                 } else if (type.equalsIgnoreCase("name")) {
                     return vote.getAssociatedUsername();
                 } else return "unkown_type";
+            case "cooldown":
+
+                if (args.length < 2)
+                    return "not_enough_args";
+
+                boolean start = args.length > 2 && args[2].equalsIgnoreCase("start");
+
+                TimeElement element = TimeElement.fromString(args[1]);
+
+                if (element == null) return "invalid_element";
+
+                LocalDateTime time = SuperbVote.getPlugin().getVoteServiceCooldown().getTime(player.getUniqueId());
+
+                if (time == null) return "0";
+
+                long until = (LocalDateTime.now().getNano() - time.getNano()) / 1000;
+
+                return String.valueOf(TimeUtil.takeElement(until, element, start));
+            case "canvote":
+                return SuperbVote.getPlugin().getVoteServiceCooldown().getTime(player.getUniqueId()) != null ? "yes" : "no";
         }
 
         return null;

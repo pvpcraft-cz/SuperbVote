@@ -30,6 +30,6 @@ public class CooldownHandler<T> {
     }
 
     public LocalDateTime getTime(T obj) {
-        return this.cooldowns.getOrDefault(obj, LocalDateTime.now());
+        return this.cooldowns.getOrDefault(obj, null);
     }
 }

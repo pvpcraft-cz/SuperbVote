@@ -16,6 +16,8 @@ public class VoteServiceCooldown extends CooldownHandler<UUID> {
     }
 
     public boolean canVote(UUID uniqueID) {
-        return super.getTime(uniqueID).isBefore(LocalDateTime.now());
+        LocalDateTime time = super.getTime(uniqueID);
+        if (time == null) return true;
+        return time.isBefore(LocalDateTime.now());
     }
 }
