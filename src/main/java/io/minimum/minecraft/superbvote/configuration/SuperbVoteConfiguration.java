@@ -14,9 +14,12 @@ import io.minimum.minecraft.superbvote.storage.JsonVoteStorage;
 import io.minimum.minecraft.superbvote.storage.MysqlVoteStorage;
 import io.minimum.minecraft.superbvote.storage.VoteStorage;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
+import io.minimum.minecraft.superbvote.votes.CommandReward;
 import io.minimum.minecraft.superbvote.votes.Vote;
 import io.minimum.minecraft.superbvote.votes.rewards.VoteReward;
-import io.minimum.minecraft.superbvote.votes.rewards.matchers.*;
+import io.minimum.minecraft.superbvote.votes.rewards.matchers.RewardMatcher;
+import io.minimum.minecraft.superbvote.votes.rewards.matchers.RewardMatchers;
+import io.minimum.minecraft.superbvote.votes.rewards.matchers.StaticRewardMatcher;
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -35,6 +38,8 @@ public class SuperbVoteConfiguration {
     private final List<VoteReward> rewards = new ArrayList<>();
     @Getter
     private final VoteMessage reminderMessage;
+    @Getter
+    private final CommandReward reminderCommands;
     @Getter
     private final VoteCommand voteCommand;
     @Getter
@@ -96,6 +101,7 @@ public class SuperbVoteConfiguration {
         }
 
         reminderMessage = VoteMessages.from(configuration, "vote-reminder.message");
+        reminderCommands = CommandReward.from(configuration, "vote-reminder.commands");
 
         if (configuration.getBoolean("vote-command.enabled")) {
             boolean useJson = configuration.getBoolean("vote-command.use-json-text");

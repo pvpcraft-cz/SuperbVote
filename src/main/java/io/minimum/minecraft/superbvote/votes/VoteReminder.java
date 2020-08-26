@@ -14,15 +14,17 @@ public class VoteReminder implements Runnable {
 
     @Override
     public void run() {
-        List<UUID> onlinePlayers = Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("superbvote.notify")).map(Player::getUniqueId).collect(Collectors.toList());
-        List<PlayerVotes> noVotes = SuperbVote.getPlugin().getVoteStorage().getAllPlayersWithNoVotesToday(onlinePlayers);
+        List<UUID> onlinePlayers = Bukkit.getOnlinePlayers().stream()
+                .filter(p -> p.hasPermission("superbvote.notify"))
+                .map(Player::getUniqueId)
+                .collect(Collectors.toList());
 
-        for (PlayerVotes pv : noVotes) {
+        for (UUID uuid : onlinePlayers) {
+            Player player = Bukkit.getPlayer(uuid);
+            PlayerVotes playerVotes = SuperbVote.getPlugin().getVoteStorage().getVotes(uuid);
 
-            Player player = Bukkit.getPlayer(pv.getUuid());
-
-            if (player != null) {
-                MessageContext context = new MessageContext(null, pv, player);
+            if (SuperbVote.getPlugin().getVoteServiceCooldown().canVote(uuid) && player != null) {
+                MessageContext context = new MessageContext(null, playerVotes, player);
                 SuperbVote.getPlugin().getConfiguration().getReminderMessage().sendAsReminder(player, context);
             }
         }

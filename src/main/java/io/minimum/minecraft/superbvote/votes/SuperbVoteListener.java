@@ -31,17 +31,17 @@ public class SuperbVoteListener implements Listener {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
-            OfflinePlayer op = Bukkit.getOfflinePlayer(event.getVote().getUsername());
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(event.getVote().getUsername());
             String worldName = null;
 
-            if (op.isOnline()) {
-                worldName = op.getPlayer().getWorld().getName();
+            if (offlinePlayer.isOnline()) {
+                worldName = offlinePlayer.getPlayer().getWorld().getName();
             }
 
-            PlayerVotes pvCurrent = SuperbVote.getPlugin().getVoteStorage().getVotes(op.getUniqueId());
-            PlayerVotes pv = new PlayerVotes(op.getUniqueId(), op.getName(), pvCurrent.getVotes() + 1, PlayerVotes.Type.FUTURE);
+            PlayerVotes pvCurrent = SuperbVote.getPlugin().getVoteStorage().getVotes(offlinePlayer.getUniqueId());
+            PlayerVotes pv = new PlayerVotes(offlinePlayer.getUniqueId(), offlinePlayer.getName(), pvCurrent.getVotes() + 1, PlayerVotes.Type.FUTURE);
 
-            Vote vote = new Vote(op.getName(), op.getUniqueId(), event.getVote().getServiceName(),
+            Vote vote = new Vote(offlinePlayer.getName(), offlinePlayer.getUniqueId(), event.getVote().getServiceName(),
                     event.getVote().getAddress().equals(SuperbVoteCommand.FAKE_HOST_NAME_FOR_VOTE), worldName, new Date());
 
             if (!vote.isFakeVote()) {
@@ -55,11 +55,11 @@ public class SuperbVoteListener implements Listener {
             boolean queue;
 
             if (SuperbVote.getPlugin().getConfig().getBoolean("claim.enabled")) {
-                if (op.isOnline())
+                if (offlinePlayer.isOnline())
                     queue = SuperbVote.getPlugin().getConfig().getBoolean("claim.online");
                 else queue = true;
             } else
-                queue = (!op.isOnline() && SuperbVote.getPlugin().getConfiguration().requirePlayersOnline());
+                queue = (!offlinePlayer.isOnline() && SuperbVote.getPlugin().getConfiguration().requirePlayersOnline());
 
             // If online, process votes already, if offline, store them.
             // --> If claim is enabled and is set to online: true, store them anyway.

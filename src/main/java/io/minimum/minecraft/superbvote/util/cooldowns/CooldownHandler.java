@@ -1,13 +1,13 @@
 package io.minimum.minecraft.superbvote.util.cooldowns;
 
 import com.google.common.base.Preconditions;
-import io.minimum.minecraft.superbvote.SuperbVote;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class CooldownHandler<T> {
+
     private final ConcurrentMap<T, LocalDateTime> cooldowns = new ConcurrentHashMap<>(32, 0.75f, 1);
     private final int max;
 
@@ -20,10 +20,16 @@ public class CooldownHandler<T> {
 
         LocalDateTime lastTime = cooldowns.get(obj);
         LocalDateTime now = LocalDateTime.now();
+
         if (lastTime == null || lastTime.isBefore(now)) {
             cooldowns.put(obj, now.plusSeconds(max));
             return false;
         }
+
         return true;
+    }
+
+    public LocalDateTime getTime(T obj) {
+        return this.cooldowns.getOrDefault(obj, LocalDateTime.now());
     }
 }

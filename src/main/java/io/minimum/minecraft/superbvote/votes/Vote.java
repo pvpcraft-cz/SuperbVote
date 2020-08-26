@@ -7,8 +7,12 @@ import java.util.UUID;
 
 @Data
 public class Vote {
+
     private final String name;
+
+    // Player UUID
     private final UUID uuid;
+
     private final String serviceName;
     private final Date received;
     private final boolean fakeVote;

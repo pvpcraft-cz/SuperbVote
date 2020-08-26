@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VoteMessages {
     public static VoteMessage from(ConfigurationSection root, String section) {

@@ -18,6 +18,8 @@ import io.minimum.minecraft.superbvote.votes.VoteService;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import space.devport.utils.configuration.Configuration;
+import space.devport.utils.text.message.Message;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,14 +107,7 @@ public class SuperbVote extends JavaPlugin {
         getServer().getScheduler().runTaskAsynchronously(this, SuperbVote.getPlugin().getScoreboardHandler()::doPopulate);
         getServer().getScheduler().runTaskAsynchronously(this, new TopPlayerSignFetcher(topPlayerSignStorage.getSignList()));
 
-        int r = getConfig().getInt("vote-reminder.repeat");
-        String text = getConfig().getString("vote-reminder.message");
-
-        if (text != null && !text.isEmpty()) {
-            if (r > 0) {
-                voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(), 20 * r, 20 * r);
-            }
-        }
+        setupVoteReminder();
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("Using clip's PlaceholderAPI to provide extra placeholders.");
@@ -169,11 +164,20 @@ public class SuperbVote extends JavaPlugin {
             voteReminderTask = null;
         }
 
-        int r = getConfig().getInt("vote-reminder.repeat");
-        String text = getConfig().getString("vote-reminder.message");
+        setupVoteReminder();
+    }
 
-        if (text != null && !text.isEmpty() && r > 0) {
-            voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(), 20 * r, 20 * r);
+    private void setupVoteReminder() {
+        int interval = getConfig().getInt("vote-reminder.repeat");
+        Configuration configuration = new Configuration(this, "config");
+
+        Message message = configuration.getMessage("vote-reminder.message");
+
+        if (message != null && !message.isEmpty()) {
+            if (interval > 0) {
+                voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(), 20 * interval, 20 * interval);
+                getLogger().info("Started Vote Reminder with interval " + interval);
+            }
         }
     }
 
