@@ -4,6 +4,7 @@ import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.votes.Vote;
 
 public class SuperbVotePlaceholderProvider implements PlaceholderProvider {
+
     @Override
     public String apply(String message, MessageContext context) {
         String base = message.replace("%player%", context.getVoteRecord().getAssociatedUsername())

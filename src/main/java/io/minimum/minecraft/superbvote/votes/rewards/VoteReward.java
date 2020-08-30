@@ -23,7 +23,8 @@ public class VoteReward {
 
     public void broadcastVote(MessageContext context, boolean playerAnnounce, boolean broadcast) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (playerMessage != null && Optional.of(player).equals(context.getPlayer()) && playerAnnounce) {
+            context.setPlayer(player);
+            if (playerMessage != null && Optional.of(player).equals(context.getVoter()) && playerAnnounce) {
                 playerMessage.sendAsBroadcast(player, context);
             }
             if (broadcastMessage != null && broadcast) {

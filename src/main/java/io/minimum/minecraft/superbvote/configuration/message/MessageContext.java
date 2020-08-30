@@ -7,14 +7,17 @@ import org.bukkit.OfflinePlayer;
 import java.util.Optional;
 
 public class MessageContext {
+
     private final Vote vote;
     private final PlayerVotes voteRecord;
-    private final OfflinePlayer player;
+    private final OfflinePlayer voter;
+    // The player that's looking at the message.
+    private OfflinePlayer player;
 
-    public MessageContext(Vote vote, PlayerVotes voteRecord, OfflinePlayer player) {
+    public MessageContext(Vote vote, PlayerVotes voteRecord, OfflinePlayer voter) {
         this.vote = vote;
         this.voteRecord = voteRecord;
-        this.player = player;
+        this.voter = voter;
     }
 
     public Optional<Vote> getVote() {
@@ -23,6 +26,14 @@ public class MessageContext {
 
     public PlayerVotes getVoteRecord() {
         return voteRecord;
+    }
+
+    public Optional<OfflinePlayer> getVoter() {
+        return Optional.ofNullable(voter);
+    }
+
+    public void setPlayer(OfflinePlayer player) {
+        this.player = player;
     }
 
     public Optional<OfflinePlayer> getPlayer() {
@@ -34,7 +45,7 @@ public class MessageContext {
         return "MessageContext{" +
                 "vote=" + vote +
                 ", voteRecord=" + voteRecord +
-                ", player=" + player +
+                ", player=" + voter +
                 '}';
     }
 }
