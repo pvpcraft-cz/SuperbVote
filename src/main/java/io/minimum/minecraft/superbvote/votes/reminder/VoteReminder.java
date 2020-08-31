@@ -31,9 +31,12 @@ public class VoteReminder implements Runnable {
             Player player = Bukkit.getPlayer(uuid);
             PlayerVotes playerVotes = SuperbVote.getPlugin().getVoteStorage().getVotes(uuid);
 
-            if (!condition.apply(player)) return;
+            if (player != null) {
 
-            if (SuperbVote.getPlugin().getVoteServiceCooldown().canVote(uuid) && player != null) {
+                if (!condition.apply(player)) {
+                    continue;
+                }
+
                 MessageContext context = new MessageContext(null, playerVotes, player);
                 SuperbVote.getPlugin().getConfiguration().getReminderMessage().sendAsReminder(player, context);
             }

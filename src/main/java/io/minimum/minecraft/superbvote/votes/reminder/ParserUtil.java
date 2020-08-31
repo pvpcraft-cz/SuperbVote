@@ -1,5 +1,6 @@
 package io.minimum.minecraft.superbvote.votes.reminder;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
@@ -7,7 +8,6 @@ import io.minimum.minecraft.superbvote.configuration.message.placeholder.ClipsPl
 import io.minimum.minecraft.superbvote.configuration.message.placeholder.PlaceholderProvider;
 import io.minimum.minecraft.superbvote.configuration.message.placeholder.SuperbVotePlaceholderProvider;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
-import jdk.internal.joptsimple.internal.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ public class ParserUtil {
         // Custom placeholders
         for (PlaceholderProvider provider : PROVIDER_LIST) {
             if (provider.canUse())
-                provider.apply(str, context);
+                str = provider.apply(str, context);
         }
 
         return str;

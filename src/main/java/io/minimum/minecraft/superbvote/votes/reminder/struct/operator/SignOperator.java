@@ -1,7 +1,7 @@
 package io.minimum.minecraft.superbvote.votes.reminder.struct.operator;
 
+import com.google.common.base.Strings;
 import io.minimum.minecraft.superbvote.votes.reminder.struct.TernaryFunction;
-import jdk.internal.joptsimple.internal.Strings;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

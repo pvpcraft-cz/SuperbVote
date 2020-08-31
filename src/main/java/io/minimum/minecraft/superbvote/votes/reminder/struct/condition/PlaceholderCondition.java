@@ -1,8 +1,8 @@
 package io.minimum.minecraft.superbvote.votes.reminder.struct.condition;
 
 import com.google.common.base.Strings;
-import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.OperatorWrapper;
 import io.minimum.minecraft.superbvote.votes.reminder.ParserUtil;
+import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.OperatorWrapper;
 import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.SignOperator;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
