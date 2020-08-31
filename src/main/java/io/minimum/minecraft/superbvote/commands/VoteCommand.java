@@ -31,8 +31,8 @@ public class VoteCommand implements CommandExecutor {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
-            MessageContext ctx = new MessageContext(null, SuperbVote.getPlugin().getVoteStorage().getVotes(player.getUniqueId()), player);
-            message.sendAsReminder(player, ctx);
+            MessageContext context = new MessageContext(null, SuperbVote.getPlugin().getVoteStorage().getVotes(player.getUniqueId()), player);
+            message.sendAsReminder(player, context);
         });
         return true;
     }

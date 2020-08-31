@@ -11,6 +11,7 @@ public class MessageContext {
     private final Vote vote;
     private final PlayerVotes voteRecord;
     private final OfflinePlayer voter;
+
     // The player that's looking at the message.
     private OfflinePlayer player;
 
@@ -18,6 +19,7 @@ public class MessageContext {
         this.vote = vote;
         this.voteRecord = voteRecord;
         this.voter = voter;
+        this.player = voter;
     }
 
     public Optional<Vote> getVote() {
