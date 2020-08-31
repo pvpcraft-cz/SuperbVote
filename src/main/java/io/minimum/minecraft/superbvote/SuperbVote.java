@@ -13,7 +13,7 @@ import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.cooldowns.VoteServiceCooldown;
 import io.minimum.minecraft.superbvote.votes.SuperbVoteListener;
 import io.minimum.minecraft.superbvote.votes.TopVoterCache;
-import io.minimum.minecraft.superbvote.votes.VoteReminder;
+import io.minimum.minecraft.superbvote.votes.reminder.VoteReminder;
 import io.minimum.minecraft.superbvote.votes.VoteService;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -175,7 +175,7 @@ public class SuperbVote extends JavaPlugin {
 
         if (message != null && !message.isEmpty()) {
             if (interval > 0) {
-                voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(), 20 * interval, 20 * interval);
+                voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(getConfig().getString("vote-reminder.condition", "")), 20 * interval, 20 * interval);
                 getLogger().info("Started Vote Reminder with interval " + interval);
             }
         }

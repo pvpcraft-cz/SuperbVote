@@ -124,6 +124,7 @@ vote-reminder:
   message: "&cDon't forget to vote for us! You currently have &a%votes%&c votes."
   on-join: true
   repeat: 180
+  condition: '%votes% = 0'
   commands:
     - 'say Hello world!'
 

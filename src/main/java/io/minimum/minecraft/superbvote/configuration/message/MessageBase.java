@@ -1,19 +1,13 @@
 package io.minimum.minecraft.superbvote.configuration.message;
 
-import com.google.common.collect.ImmutableList;
-import io.minimum.minecraft.superbvote.configuration.message.placeholder.ClipsPlaceholderProvider;
 import io.minimum.minecraft.superbvote.configuration.message.placeholder.PlaceholderProvider;
-import io.minimum.minecraft.superbvote.configuration.message.placeholder.SuperbVotePlaceholderProvider;
-
-import java.util.List;
+import io.minimum.minecraft.superbvote.votes.reminder.ParserUtil;
 
 class MessageBase {
-    private static final List<PlaceholderProvider> PROVIDER_LIST = ImmutableList.of(new SuperbVotePlaceholderProvider(),
-            new ClipsPlaceholderProvider());
 
     String replace(String message, MessageContext context) {
         String replaced = message;
-        for (PlaceholderProvider provider : PROVIDER_LIST) {
+        for (PlaceholderProvider provider : ParserUtil.PROVIDER_LIST) {
             if (provider.canUse()) {
                 replaced = provider.apply(replaced, context);
             }
