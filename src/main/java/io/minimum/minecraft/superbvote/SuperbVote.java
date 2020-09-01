@@ -13,13 +13,16 @@ import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.cooldowns.VoteServiceCooldown;
 import io.minimum.minecraft.superbvote.votes.SuperbVoteListener;
 import io.minimum.minecraft.superbvote.votes.TopVoterCache;
-import io.minimum.minecraft.superbvote.votes.reminder.VoteReminder;
 import io.minimum.minecraft.superbvote.votes.VoteService;
+import io.minimum.minecraft.superbvote.votes.reminder.VoteReminder;
 import lombok.Getter;
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
+import space.devport.utils.utility.VersionUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +54,8 @@ public class SuperbVote extends JavaPlugin {
     private VoteService voteService;
 
     private BukkitTask voteReminderTask;
+
+    private SuperbVotePlaceholders placeholders;
 
     private TopVoterCache topVoterCache;
 
@@ -109,8 +114,22 @@ public class SuperbVote extends JavaPlugin {
 
         setupVoteReminder();
 
+        setupPlaceholders();
+    }
+
+    public void setupPlaceholders() {
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("Using clip's PlaceholderAPI to provide extra placeholders.");
+
+            if (placeholders == null) {
+                this.placeholders = new SuperbVotePlaceholders(this);
+            }
+
+            if (PlaceholderAPI.isRegistered("superbvote") &&
+                    VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) < 1) {
+                this.placeholders.unregister();
+                getLogger().info("Unregistered old expansion.");
+            }
 
             if (getConfig().getBoolean("top-cache.enabled")) {
                 int updateCycle = getConfig().getInt("top-cache.update-cycle");
@@ -118,10 +137,10 @@ public class SuperbVote extends JavaPlugin {
                 topVoterCache = new TopVoterCache();
                 voteTopUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, topVoterCache, 20 * updateCycle, 20 * updateCycle);
                 getLogger().info("Top Voters cache update cycle started..");
-
-                new SuperbVotePlaceholders(this).register();
-                getLogger().info("Registered custom placeholders for PAPI.");
             }
+
+            placeholders.register();
+            getLogger().info("Registered custom placeholders for PAPI.");
         }
     }
 
@@ -165,6 +184,7 @@ public class SuperbVote extends JavaPlugin {
         }
 
         setupVoteReminder();
+        setupPlaceholders();
     }
 
     private void setupVoteReminder() {
