@@ -147,7 +147,8 @@ public class SuperbVote extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        voteReminder.stop();
+        if (voteReminder != null)
+            voteReminder.stop();
 
         voteStorage.save();
         queuedVotes.save();
@@ -182,7 +183,8 @@ public class SuperbVote extends JavaPlugin {
 
     private void setupVoteReminder() {
 
-        voteReminder.stop();
+        if (voteReminder != null)
+            voteReminder.stop();
 
         int interval = getConfig().getInt("vote-reminder.repeat");
         Configuration configuration = new Configuration(this, "config");
