@@ -25,6 +25,8 @@ public interface VoteStorage {
 
     boolean hasVotedToday(UUID player);
 
+    long getLastVote(UUID player);
+
     List<PlayerVotes> getAllPlayersWithNoVotesToday(List<UUID> onlinePlayers);
 
     void save();

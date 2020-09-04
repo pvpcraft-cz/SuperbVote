@@ -17,7 +17,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -89,6 +92,10 @@ public class JsonVoteStorage implements VoteStorage {
         return vf;
     }
 
+    public Map<UUID, PlayerRecord> getVoteCounts() {
+        return Collections.unmodifiableMap(voteCounts);
+    }
+
     @Override
     public void addVote(Vote vote) {
         Preconditions.checkNotNull(vote, "vote");
@@ -145,6 +152,21 @@ public class JsonVoteStorage implements VoteStorage {
             PlayerRecord pr = voteCounts.get(player);
             return new PlayerVotes(player, pr != null ? pr.lastKnownUsername : null, pr == null ? 0 : pr.votes,
                     PlayerVotes.Type.CURRENT);
+        } finally {
+            rwl.readLock().unlock();
+        }
+    }
+
+    @Override
+    public long getLastVote(UUID player) {
+        Preconditions.checkNotNull(player, "player");
+        rwl.readLock().lock();
+        try {
+            PlayerRecord pr = voteCounts.get(player);
+            if (pr != null) {
+                return LocalDateTime.ofInstant(Instant.ofEpochMilli(pr.lastVoted), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            }
+            return 0;
         } finally {
             rwl.readLock().unlock();
         }

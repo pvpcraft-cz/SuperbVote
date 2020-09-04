@@ -8,8 +8,9 @@ import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import io.minimum.minecraft.superbvote.votes.Vote;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,12 +117,13 @@ public class MysqlVoteStorage implements VoteStorage {
                     statement.executeUpdate();
                 }
             } else {
-                try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + " (uuid, last_name, votes, last_vote) VALUES (?, NULL, 1, ?)" +
+                try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + " (uuid, last_name, votes, last_vote) VALUES (?, ?, 1, ?)" +
                         " ON DUPLICATE KEY UPDATE votes = votes + 1, last_vote = ?")) {
 
                     statement.setString(1, vote.getUuid().toString());
-                    statement.setTimestamp(2, new Timestamp(vote.getReceived().getTime()));
+                    statement.setString(2, vote.getName());
                     statement.setTimestamp(3, new Timestamp(vote.getReceived().getTime()));
+                    statement.setTimestamp(4, new Timestamp(vote.getReceived().getTime()));
                     statement.executeUpdate();
                 }
             }
@@ -130,20 +132,9 @@ public class MysqlVoteStorage implements VoteStorage {
         }
     }
 
-    public void updateName(Player player) {
-        if (readOnly)
-            return;
-
-        Preconditions.checkNotNull(player, "player");
-        try (Connection connection = dbPool.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE " + tableName + " SET last_name = ? WHERE uuid = ?")) {
-                statement.setString(1, player.getName());
-                statement.setString(2, player.getUniqueId().toString());
-                statement.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Unable to update name for " + player.toString(), e);
-        }
+    private String getLastName(UUID uniqueID) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uniqueID);
+        return offlinePlayer.getName();
     }
 
     @Override
@@ -153,13 +144,15 @@ public class MysqlVoteStorage implements VoteStorage {
 
         Preconditions.checkNotNull(player, "player");
         try (Connection connection = dbPool.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + " (uuid, votes, last_vote) VALUES (?, ?, ?)" +
-                    " ON DUPLICATE KEY UPDATE votes = ?, last_vote = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + " (uuid, last_name, votes, last_vote) VALUES (?, ?, ?, ?)" +
+                    " ON DUPLICATE KEY UPDATE votes = ?, last_vote = ?, last_name = ?")) {
                 statement.setString(1, player.toString());
-                statement.setInt(2, votes);
-                statement.setTimestamp(3, new Timestamp(ts));
-                statement.setInt(4, votes);
-                statement.setTimestamp(5, new Timestamp(ts));
+                statement.setString(2, getLastName(player));
+                statement.setInt(3, votes);
+                statement.setTimestamp(4, new Timestamp(ts));
+                statement.setInt(5, votes);
+                statement.setTimestamp(6, new Timestamp(ts));
+                statement.setString(7, getLastName(player));
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -237,6 +230,24 @@ public class MysqlVoteStorage implements VoteStorage {
             SuperbVote.getPlugin().getLogger().log(Level.SEVERE, "Unable to get top votes page count", e);
             return 0;
         }
+    }
+
+    @Override
+    public long getLastVote(UUID player) {
+        try (Connection connection = dbPool.getConnection()) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement("SELECT last_vote FROM " + tableName + " WHERE uuid = ?")) {
+                statement.setString(1, player.toString());
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return resultSet.getTimestamp("last_vote").getTime();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            SuperbVote.getPlugin().getLogger().log(Level.SEVERE, "Unable to get top votes page count", e);
+        }
+        return 0;
     }
 
     @Override

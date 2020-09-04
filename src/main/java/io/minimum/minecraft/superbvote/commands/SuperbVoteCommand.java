@@ -5,10 +5,7 @@ import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.commands.gui.ClaimGUI;
 import io.minimum.minecraft.superbvote.configuration.TextLeaderboardConfiguration;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
-import io.minimum.minecraft.superbvote.migration.GAListenerMigration;
-import io.minimum.minecraft.superbvote.migration.Migration;
-import io.minimum.minecraft.superbvote.migration.ProgressListener;
-import io.minimum.minecraft.superbvote.migration.SuperbVoteJsonFileMigration;
+import io.minimum.minecraft.superbvote.migration.*;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
@@ -315,8 +312,11 @@ public class SuperbVoteCommand implements CommandExecutor {
                     case "svjson":
                         migration = new SuperbVoteJsonFileMigration();
                         break;
+                    case "mysql":
+                        migration = new MySQLMigration();
+                        break;
                     default:
-                        sender.sendMessage(ChatColor.RED + "Not a valid listener. Currently supported: gal, svjson.");
+                        sender.sendMessage(ChatColor.RED + "Not a valid listener. Currently supported: gal, svjson, mysql.");
                         return true;
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {

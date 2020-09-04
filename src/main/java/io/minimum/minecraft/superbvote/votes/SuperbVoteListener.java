@@ -81,11 +81,6 @@ public class SuperbVoteListener implements Listener {
 
         Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
 
-            // Update names in MySQL, if it is being used.
-            if (SuperbVote.getPlugin().getVoteStorage() instanceof MysqlVoteStorage) {
-                ((MysqlVoteStorage) SuperbVote.getPlugin().getVoteStorage()).updateName(event.getPlayer());
-            }
-
             // Process queued votes.
             PlayerVotes pv = SuperbVote.getPlugin().getVoteStorage().getVotes(event.getPlayer().getUniqueId());
             List<Vote> votes = SuperbVote.getPlugin().getQueuedVotes().getVotes(event.getPlayer().getUniqueId());

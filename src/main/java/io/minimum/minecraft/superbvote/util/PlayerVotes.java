@@ -7,10 +7,11 @@ import java.util.UUID;
 
 @Value
 public class PlayerVotes {
-    private final UUID uuid;
-    private final String associatedUsername;
-    private final int votes;
-    private final Type type;
+
+    UUID uuid;
+    String associatedUsername;
+    int votes;
+    Type type;
 
     public String getAssociatedUsername() {
         if (associatedUsername == null) {
