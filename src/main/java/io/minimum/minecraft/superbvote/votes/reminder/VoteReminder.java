@@ -4,18 +4,18 @@ import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
 import io.minimum.minecraft.superbvote.votes.reminder.struct.condition.PlaceholderCondition;
-import io.minimum.minecraft.superbvote.votes.reminder.struct.condition.ReminderCondition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class VoteReminder implements Runnable {
 
-    private final ReminderCondition condition;
+    private final Predicate<Player> condition;
 
     private BukkitTask task;
 
@@ -54,7 +54,7 @@ public class VoteReminder implements Runnable {
     }
 
     public void sendMessage(Player player, MessageContext context) {
-        if (condition.apply(player))
+        if (condition.test(player))
             SuperbVote.getPlugin().getConfiguration().getReminderMessage().sendAsReminder(player, context);
     }
 }

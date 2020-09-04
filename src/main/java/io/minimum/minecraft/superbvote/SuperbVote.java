@@ -194,6 +194,7 @@ public class SuperbVote extends JavaPlugin {
         if (message != null && !message.isEmpty()) {
             if (interval > 0) {
                 voteReminder = new VoteReminder(getConfig().getString("vote-reminder.condition", ""));
+                voteReminder.start(interval);
                 getLogger().info("Started Vote Reminder with interval " + interval);
             }
         }

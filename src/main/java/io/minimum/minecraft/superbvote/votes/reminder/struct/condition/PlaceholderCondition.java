@@ -1,5 +1,6 @@
 package io.minimum.minecraft.superbvote.votes.reminder.struct.condition;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import io.minimum.minecraft.superbvote.votes.reminder.ParserUtil;
 import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.OperatorWrapper;
@@ -7,11 +8,7 @@ import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.SignOperat
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class PlaceholderCondition implements ReminderCondition {
-
-    /*
-     * Note: Requires PlaceholderAPI to run, doesn't parse internal placeholders.
-     * */
+public class PlaceholderCondition implements Predicate<Player> {
 
     private final String condition;
 
@@ -20,7 +17,7 @@ public class PlaceholderCondition implements ReminderCondition {
     }
 
     @Override
-    public Boolean apply(Player player) {
+    public boolean apply(Player player) {
         String condition = this.condition;
 
         condition = ParserUtil.parsePlaceholders(condition, player);
@@ -47,6 +44,11 @@ public class PlaceholderCondition implements ReminderCondition {
         Object parsedLeft = ParserUtil.parseObject(leftSide);
         Object parsedRight = ParserUtil.parseObject(rightSide);
 
-        return wrapper.operator().apply(parsedLeft, parsedRight);
+        return wrapper.operator().test(parsedLeft, parsedRight);
+    }
+
+    @Override
+    public String toString() {
+        return condition;
     }
 }
