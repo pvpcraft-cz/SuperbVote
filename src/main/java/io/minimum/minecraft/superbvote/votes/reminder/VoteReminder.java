@@ -7,6 +7,7 @@ import io.minimum.minecraft.superbvote.votes.reminder.struct.condition.Placehold
 import io.minimum.minecraft.superbvote.votes.reminder.struct.condition.ReminderCondition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,8 +17,22 @@ public class VoteReminder implements Runnable {
 
     private final ReminderCondition condition;
 
+    private BukkitTask task;
+
     public VoteReminder(String condition) {
         this.condition = new PlaceholderCondition(condition);
+    }
+
+    public void stop() {
+        if (task == null) return;
+        task.cancel();
+        task = null;
+    }
+
+    public void start(int interval) {
+        if (task != null) stop();
+
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(SuperbVote.getPlugin(), this, 20 * interval, 20 * interval);
     }
 
     @Override
@@ -32,14 +47,14 @@ public class VoteReminder implements Runnable {
             PlayerVotes playerVotes = SuperbVote.getPlugin().getVoteStorage().getVotes(uuid);
 
             if (player != null) {
-
-                if (!condition.apply(player)) {
-                    continue;
-                }
-
                 MessageContext context = new MessageContext(null, playerVotes, player);
-                SuperbVote.getPlugin().getConfiguration().getReminderMessage().sendAsReminder(player, context);
+                sendMessage(player, context);
             }
         }
+    }
+
+    public void sendMessage(Player player, MessageContext context) {
+        if (condition.apply(player))
+            SuperbVote.getPlugin().getConfiguration().getReminderMessage().sendAsReminder(player, context);
     }
 }

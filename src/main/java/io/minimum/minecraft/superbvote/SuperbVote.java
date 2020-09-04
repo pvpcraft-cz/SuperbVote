@@ -53,7 +53,8 @@ public class SuperbVote extends JavaPlugin {
     @Getter
     private VoteService voteService;
 
-    private BukkitTask voteReminderTask;
+    @Getter
+    private VoteReminder voteReminder;
 
     private SuperbVotePlaceholders placeholders;
 
@@ -146,10 +147,7 @@ public class SuperbVote extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (voteReminderTask != null) {
-            voteReminderTask.cancel();
-            voteReminderTask = null;
-        }
+        voteReminder.stop();
 
         voteStorage.save();
         queuedVotes.save();
@@ -178,16 +176,14 @@ public class SuperbVote extends JavaPlugin {
         getServer().getScheduler().runTaskAsynchronously(this, getScoreboardHandler()::doPopulate);
         getCommand("vote").setExecutor(configuration.getVoteCommand());
 
-        if (voteReminderTask != null) {
-            voteReminderTask.cancel();
-            voteReminderTask = null;
-        }
-
         setupVoteReminder();
         setupPlaceholders();
     }
 
     private void setupVoteReminder() {
+
+        voteReminder.stop();
+
         int interval = getConfig().getInt("vote-reminder.repeat");
         Configuration configuration = new Configuration(this, "config");
 
@@ -195,7 +191,7 @@ public class SuperbVote extends JavaPlugin {
 
         if (message != null && !message.isEmpty()) {
             if (interval > 0) {
-                voteReminderTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new VoteReminder(getConfig().getString("vote-reminder.condition", "")), 20 * interval, 20 * interval);
+                voteReminder = new VoteReminder(getConfig().getString("vote-reminder.condition", ""));
                 getLogger().info("Started Vote Reminder with interval " + interval);
             }
         }
