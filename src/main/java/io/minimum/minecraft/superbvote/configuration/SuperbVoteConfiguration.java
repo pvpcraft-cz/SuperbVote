@@ -39,6 +39,8 @@ public class SuperbVoteConfiguration {
     @Getter
     private final VoteMessage reminderMessage;
     @Getter
+    private final VoteMessage claimMessage;
+    @Getter
     private final CommandReward reminderCommands;
     @Getter
     private final VoteCommand voteCommand;
@@ -102,6 +104,8 @@ public class SuperbVoteConfiguration {
 
         reminderMessage = VoteMessages.from(configuration, "vote-reminder.message");
         reminderCommands = CommandReward.from(configuration, "vote-reminder.commands");
+
+        claimMessage = VoteMessages.from(configuration, "claim.reminder");
 
         if (configuration.getBoolean("vote-command.enabled")) {
             boolean useJson = configuration.getBoolean("vote-command.use-json-text");

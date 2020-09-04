@@ -98,10 +98,8 @@ public class SuperbVoteListener implements Listener {
                     SuperbVote.getPlugin().getVoteService().afterVoteProcessing();
                 } else {
                     // Remind them there are unclaimed rewards waiting for them.
-                    if (SuperbVote.getPlugin().getVoteReminder() != null) {
-                        MessageContext context = new MessageContext(null, pv, event.getPlayer());
-                        SuperbVote.getPlugin().getVoteReminder().sendMessage(event.getPlayer(), context);
-                    }
+                    MessageContext context = new MessageContext(null, pv, event.getPlayer());
+                    SuperbVote.getPlugin().getConfiguration().getClaimMessage().sendAsReminder(event.getPlayer(), context);
                 }
             }
 
