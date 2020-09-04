@@ -321,8 +321,7 @@ public class SuperbVoteCommand implements CommandExecutor {
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
                     if (SuperbVote.getPlugin().getVoteStorage().getPagesAvailable(1) > 0) {
-                        sender.sendMessage(ChatColor.RED + "You already have votes in the database. Use /sv clear and try again.");
-                        return;
+                        sender.sendMessage(ChatColor.RED + "You already have votes in the database... overwriting, too late to cancel, your bad.");
                     }
                     try {
                         sender.sendMessage(ChatColor.GRAY + "Migrating... (you can check the progress in the console)");
