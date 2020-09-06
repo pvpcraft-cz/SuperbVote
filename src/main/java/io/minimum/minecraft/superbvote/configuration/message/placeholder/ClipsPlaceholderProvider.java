@@ -9,9 +9,10 @@ public class ClipsPlaceholderProvider implements PlaceholderProvider {
     @Override
     public String apply(String message, MessageContext context) {
 
+        message = message.replaceAll("(?i)%voter_", "%");
+
         if (context.getPlayer().isPresent() && context.getPlayer().get().isOnline()) {
-            message = PlaceholderAPI.setPlaceholders(context.getPlayer().get().getPlayer(), message)
-                    .replaceAll("(?i)%voter_", "%");
+            message = PlaceholderAPI.setPlaceholders(context.getPlayer().get().getPlayer(), message);
         }
 
         if (context.getVoter().isPresent() && context.getVoter().get().isOnline()) {
