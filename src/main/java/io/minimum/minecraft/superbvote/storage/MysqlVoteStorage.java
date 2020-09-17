@@ -41,8 +41,10 @@ public class MysqlVoteStorage implements VoteStorage {
     }
 
     public void initialize() {
+
         // Load current DB version from disk
-        YamlConfiguration dbInfo = YamlConfiguration.loadConfiguration(new File(SuperbVote.getPlugin().getDataFolder(), "db_version.yml"));
+        File dbFile = new File(SuperbVote.getPlugin().getDataFolder(), "db_version.yml");
+        YamlConfiguration dbInfo = YamlConfiguration.loadConfiguration(dbFile);
         dbInfo.options().header("DO NOT EDIT - SuperbVote internal use");
 
         int ver = dbInfo.getInt("db_version", 1);
@@ -87,10 +89,10 @@ public class MysqlVoteStorage implements VoteStorage {
                 SuperbVote.getPlugin().getLogger().log(Level.SEVERE, "Unable to initialize database", e);
             }
 
-            if (isUpdated) {
+            if (isUpdated || !dbFile.exists()) {
                 dbInfo.set("db_version", TABLE_VERSION_CURRENT);
                 try {
-                    dbInfo.save(new File(SuperbVote.getPlugin().getDataFolder(), "db_version.yml"));
+                    dbInfo.save(dbFile);
                 } catch (IOException e) {
                     SuperbVote.getPlugin().getLogger().log(Level.SEVERE, "Unable to save DB info", e);
                 }
