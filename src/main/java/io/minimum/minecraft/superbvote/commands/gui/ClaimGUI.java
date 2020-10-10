@@ -103,7 +103,7 @@ public class ClaimGUI implements Listener {
             if (!ItemNBTEditor.hasNBTKey(item, "superbvote"))
                 return;
 
-            String value = ItemNBTEditor.getNBT(item, "superbvote");
+            String value = ItemNBTEditor.getString(item, "superbvote");
 
             switch (value.trim().toLowerCase()) {
                 case "gather":
