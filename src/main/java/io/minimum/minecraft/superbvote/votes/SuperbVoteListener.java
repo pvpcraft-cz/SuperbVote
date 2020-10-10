@@ -103,15 +103,18 @@ public class SuperbVoteListener implements Listener {
                 }
             }
 
-            // Remind players to vote.
-            if (SuperbVote.getPlugin().getConfig().getBoolean("vote-reminder.on-join") &&
-                    !SuperbVote.getPlugin().getVoteStorage().hasVotedToday(event.getPlayer().getUniqueId())) {
+            MessageContext context = new MessageContext(null, pv, event.getPlayer());
 
-                if (SuperbVote.getPlugin().getVoteReminder() != null) {
-                    MessageContext context = new MessageContext(null, pv, event.getPlayer());
+            // Remind players to vote.
+            if (SuperbVote.getPlugin().getConfig().getBoolean("vote-reminder.on-join")) {
+
+                if (SuperbVote.getPlugin().getVoteReminder() != null)
                     SuperbVote.getPlugin().getVoteReminder().sendMessage(event.getPlayer(), context);
-                }
             }
+
+            // Extra join reminder
+            if (SuperbVote.getPlugin().getJoinReminder() != null)
+                SuperbVote.getPlugin().getJoinReminder().run(event.getPlayer(), context);
         });
     }
 

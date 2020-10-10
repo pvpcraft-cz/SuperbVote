@@ -14,6 +14,7 @@ import io.minimum.minecraft.superbvote.util.cooldowns.VoteServiceCooldown;
 import io.minimum.minecraft.superbvote.votes.SuperbVoteListener;
 import io.minimum.minecraft.superbvote.votes.TopVoterCache;
 import io.minimum.minecraft.superbvote.votes.VoteService;
+import io.minimum.minecraft.superbvote.votes.reminder.JoinReminder;
 import io.minimum.minecraft.superbvote.votes.reminder.VoteReminder;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -55,6 +56,8 @@ public class SuperbVote extends JavaPlugin {
 
     @Getter
     private VoteReminder voteReminder;
+    @Getter
+    private JoinReminder joinReminder;
 
     private SuperbVotePlaceholders placeholders;
 
@@ -68,6 +71,7 @@ public class SuperbVote extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         plugin = this;
         saveDefaultConfig();
 
@@ -197,6 +201,12 @@ public class SuperbVote extends JavaPlugin {
                 voteReminder.start(interval);
                 getLogger().info("Started Vote Reminder with interval " + interval);
             }
+        }
+
+        if (getConfig().getConfigurationSection("join-reminder") != null) {
+            joinReminder = new JoinReminder(this, getConfig().getString("join-reminder.condition", ""));
+            joinReminder.addCommands(getConfig().getStringList("join-reminder.commands"));
+            getLogger().info("Loaded join reminder commands.");
         }
     }
 

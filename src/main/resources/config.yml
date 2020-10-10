@@ -119,6 +119,12 @@ vote-command:
   text: |-
     You could vote for us, but the owner forgot to add the list of websites to vote at!
 
+# Extra join commands.
+join-reminder:
+  condition: '%votes% = 0'
+  commands:
+    - 'msg %player% Vote!'
+
 # Vote reminder.
 vote-reminder:
   message: "&cDon't forget to vote for us! You currently have &a%votes%&c votes."
@@ -126,7 +132,7 @@ vote-reminder:
   repeat: 180
   condition: '%votes% = 0'
   commands:
-    - 'say Hello world!'
+    - 'msg %player% Hello world!'
 
 # Controls the /sv <top/leaderboard> command.
 leaderboard:

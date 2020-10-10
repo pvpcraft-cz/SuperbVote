@@ -12,6 +12,10 @@ public class PlainStringMessage extends MessageBase implements VoteMessage, Offl
         this.message = ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    public String getReplaced(MessageContext messageContext) {
+        return replace(message, messageContext);
+    }
+
     @Override
     public void sendAsBroadcast(Player player, MessageContext context) {
         player.sendMessage(replace(message, context));
