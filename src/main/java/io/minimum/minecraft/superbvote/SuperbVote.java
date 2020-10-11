@@ -197,8 +197,10 @@ public class SuperbVote extends JavaPlugin {
 
         if (message != null && !message.isEmpty()) {
             if (interval > 0) {
-                voteReminder = new VoteReminder(getConfig().getString("vote-reminder.condition", ""));
+                voteReminder = new VoteReminder(this, getConfig().getString("vote-reminder.condition", ""));
+                voteReminder.setCommands(getConfig().getStringList("vote-reminder.commands"));
                 voteReminder.start(interval);
+
                 getLogger().info("Started Vote Reminder with interval " + interval);
             }
         }
@@ -206,6 +208,7 @@ public class SuperbVote extends JavaPlugin {
         if (getConfig().getConfigurationSection("join-reminder") != null) {
             joinReminder = new JoinReminder(this, getConfig().getString("join-reminder.condition", ""));
             joinReminder.addCommands(getConfig().getStringList("join-reminder.commands"));
+
             getLogger().info("Loaded join reminder commands.");
         }
     }

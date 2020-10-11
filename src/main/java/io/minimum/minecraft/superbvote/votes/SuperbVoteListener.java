@@ -22,12 +22,14 @@ public class SuperbVoteListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onVote(final VotifierEvent event) {
+
         if (SuperbVote.getPlugin().getConfiguration().isConfigurationError()) {
             SuperbVote.getPlugin().getLogger().severe("Refusing to process vote because your configuration is invalid. Please check your logs.");
             return;
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(SuperbVote.getPlugin(), () -> {
+
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(event.getVote().getUsername());
             String worldName = null;
 
@@ -68,6 +70,7 @@ public class SuperbVoteListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+
         if (SuperbVote.getPlugin().getConfiguration().isConfigurationError()) {
             if (event.getPlayer().hasPermission("superbvote.admin")) {
                 Player player = event.getPlayer();

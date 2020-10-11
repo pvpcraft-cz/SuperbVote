@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class VoteService {
+
     public void processVote(PlayerVotes pv, Vote vote, boolean broadcast, boolean queue, boolean wasQueued, boolean addVote) {
 
         List<VoteReward> bestRewards = SuperbVote.getPlugin().getConfiguration().getBestRewards(vote, pv);
