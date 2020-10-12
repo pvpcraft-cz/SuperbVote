@@ -6,6 +6,7 @@ import io.minimum.minecraft.superbvote.commands.SuperbVoteCommand;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
+import io.minimum.minecraft.superbvote.votes.reminder.ParserUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,6 +15,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import space.devport.utils.configuration.Configuration;
+import space.devport.utils.text.message.Message;
 
 import java.util.Date;
 import java.util.List;
@@ -100,9 +103,10 @@ public class SuperbVoteListener implements Listener {
 
                     SuperbVote.getPlugin().getVoteService().afterVoteProcessing();
                 } else {
-                    // Remind them there are unclaimed rewards waiting for them.
-                    MessageContext context = new MessageContext(null, pv, event.getPlayer());
-                    SuperbVote.getPlugin().getConfiguration().getClaimMessage().sendAsReminder(event.getPlayer(), context);
+                    Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
+                    cfg.getMessage("claim.reminder", new Message())
+                            .map(l -> ParserUtil.parsePlaceholders(l, event.getPlayer()))
+                            .send(event.getPlayer());
                 }
             }
 

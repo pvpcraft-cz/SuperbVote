@@ -5,7 +5,11 @@ import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.commands.gui.ClaimGUI;
 import io.minimum.minecraft.superbvote.configuration.TextLeaderboardConfiguration;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
-import io.minimum.minecraft.superbvote.migration.*;
+import io.minimum.minecraft.superbvote.migration.GAListenerMigration;
+import io.minimum.minecraft.superbvote.migration.Migration;
+import io.minimum.minecraft.superbvote.migration.MySQLMigration;
+import io.minimum.minecraft.superbvote.migration.ProgressListener;
+import io.minimum.minecraft.superbvote.migration.SuperbVoteJsonFileMigration;
 import io.minimum.minecraft.superbvote.signboard.TopPlayerSignFetcher;
 import io.minimum.minecraft.superbvote.util.BrokenNag;
 import io.minimum.minecraft.superbvote.util.PlayerVotes;
@@ -23,9 +27,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.text.message.Message;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class SuperbVoteCommand implements CommandExecutor {
@@ -420,16 +430,9 @@ public class SuperbVoteCommand implements CommandExecutor {
 
                         Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
 
-                        List<String> msg = cfg.getColoredList("claim.claimed");
-
-                        for (String line : msg) {
-                            line = line.replace("%votes%", String.valueOf(claimed));
-
-                            if (line.contains("%remaining_votes%") && votes.size() != 0)
-                                sender.sendMessage(line.replace("%remaining_votes%", String.valueOf(votes.size())));
-                            else if (!line.contains("%remaining_votes%"))
-                                sender.sendMessage(line);
-                        }
+                        Message message = cfg.getMessage("claim.claimed", new Message());
+                        message.replace("%remaining_votes%", String.valueOf(votes.size()))
+                                .send(sender);
                     });
                 }
                 return true;
