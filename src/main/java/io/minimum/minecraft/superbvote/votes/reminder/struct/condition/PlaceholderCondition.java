@@ -1,12 +1,13 @@
 package io.minimum.minecraft.superbvote.votes.reminder.struct.condition;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import io.minimum.minecraft.superbvote.votes.reminder.ParserUtil;
 import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.OperatorWrapper;
 import io.minimum.minecraft.superbvote.votes.reminder.struct.operator.SignOperator;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.function.Predicate;
 
 public class PlaceholderCondition implements Predicate<Player> {
 
@@ -17,7 +18,7 @@ public class PlaceholderCondition implements Predicate<Player> {
     }
 
     @Override
-    public boolean apply(Player player) {
+    public boolean test(Player player) {
         String condition = this.condition;
 
         condition = ParserUtil.parsePlaceholders(condition, player);
