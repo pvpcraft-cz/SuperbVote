@@ -1,7 +1,5 @@
 package io.minimum.minecraft.superbvote.signboard;
 
-import com.cryptomorin.xseries.XBlock;
-import com.cryptomorin.xseries.XMaterial;
 import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.configuration.message.MessageContext;
 import io.minimum.minecraft.superbvote.configuration.message.PlainStringMessage;
@@ -13,6 +11,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
+import space.devport.utils.xseries.XBlock;
+import space.devport.utils.xseries.XMaterial;
 
 import java.util.List;
 import java.util.Optional;

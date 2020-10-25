@@ -1,7 +1,5 @@
 package io.minimum.minecraft.superbvote.signboard;
 
-import com.cryptomorin.xseries.XBlock;
-import com.cryptomorin.xseries.XMaterial;
 import io.minimum.minecraft.superbvote.SuperbVote;
 import io.minimum.minecraft.superbvote.util.SerializableLocation;
 import org.bukkit.Bukkit;
@@ -15,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import space.devport.utils.xseries.XBlock;
+import space.devport.utils.xseries.XMaterial;
 
 public class TopPlayerSignListener implements Listener {
     @EventHandler(ignoreCancelled = true)
