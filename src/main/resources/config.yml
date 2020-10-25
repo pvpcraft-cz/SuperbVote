@@ -64,6 +64,8 @@ claim:
     - '&7There are &e%remaining_votes% &7remaining due to full inventory.'
   stored:
     - '&5SuperbVote &8>> &e%player% &7has &e%votes% &7stored votes.'
+  no-stored-votes:
+    - '&5SuperbVote &8>> &cYou have no stored votes.'
 
 # General vote configuration.
 votes:

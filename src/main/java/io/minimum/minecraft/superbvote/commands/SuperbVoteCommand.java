@@ -400,8 +400,11 @@ public class SuperbVoteCommand implements CommandExecutor {
                         PlayerVotes pv = SuperbVote.getPlugin().getVoteStorage().getVotes(uuid);
                         List<Vote> votes = SuperbVote.getPlugin().getQueuedVotes().getAndRemoveVotes(uuid);
 
+                        Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
+
                         if (votes.size() == 0) {
-                            sender.sendMessage(ChatColor.RED + "You have no votes to claim.");
+                            cfg.getMessage("claim.no-stored-votes", new Message("&cYou have no votes to claim."))
+                                    .send(sender);
                             return;
                         }
 
@@ -428,10 +431,8 @@ public class SuperbVoteCommand implements CommandExecutor {
                         // Unreliable, but has to do for now, will later replace with a better and separate queued-vote get method. Maybe..
                         votes.forEach(v -> SuperbVote.getPlugin().getQueuedVotes().addVote(v));
 
-                        Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
-
-                        Message message = cfg.getMessage("claim.claimed", new Message());
-                        message.replace("%claimed_votes%", String.valueOf(claimed))
+                        cfg.getMessage("claim.claimed", new Message("&7You claimed &e%claimed_votes% &7stored votes."))
+                                .replace("%claimed_votes%", String.valueOf(claimed))
                                 .replace("%remaining_votes%", String.valueOf(votes.size()))
                                 .send(sender);
                     });
