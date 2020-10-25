@@ -11,9 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class VoteReminder implements Runnable {
 
@@ -43,29 +41,33 @@ public class VoteReminder implements Runnable {
 
     @Override
     public void run() {
-        List<UUID> onlinePlayers = Bukkit.getOnlinePlayers().stream()
-                .filter(p -> p.hasPermission("superbvote.notify"))
-                .map(Player::getUniqueId)
-                .collect(Collectors.toList());
+        for (Player player : Bukkit.getOnlinePlayers()) {
 
-        for (UUID uuid : onlinePlayers) {
+            if (!player.hasPermission("superbvote.notify"))
+                continue;
 
-            Player player = Bukkit.getPlayer(uuid);
-
-            if (!condition.test(player)) continue;
-
-            PlayerVotes playerVotes = plugin.getVoteStorage().getVotes(uuid);
-
-            if (player != null) {
-                MessageContext context = new MessageContext(null, playerVotes, player);
-                sendMessage(player, context);
-
-                for (String command : commands) {
-                    PlainStringMessage cmd = new PlainStringMessage(command);
-                    Bukkit.getScheduler().runTask(plugin, () -> plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.getReplaced(context)));
-                }
-            }
+            run(player);
         }
+    }
+
+    public void run(Player player, MessageContext context) {
+
+        if (!condition.test(player))
+            return;
+
+        sendMessage(player, context);
+
+        for (String command : commands) {
+            PlainStringMessage cmd = new PlainStringMessage(command);
+            Bukkit.getScheduler().runTask(plugin, () -> plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.getReplaced(context)));
+        }
+    }
+
+    public void run(Player player) {
+        PlayerVotes playerVotes = plugin.getVoteStorage().getVotes(player.getUniqueId());
+        MessageContext context = new MessageContext(null, playerVotes, player);
+
+        run(player, context);
     }
 
     public void sendMessage(Player player, MessageContext context) {

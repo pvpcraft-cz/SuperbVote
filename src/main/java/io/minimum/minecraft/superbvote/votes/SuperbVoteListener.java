@@ -116,7 +116,7 @@ public class SuperbVoteListener implements Listener {
             if (SuperbVote.getPlugin().getConfig().getBoolean("vote-reminder.on-join")) {
 
                 if (SuperbVote.getPlugin().getVoteReminder() != null)
-                    SuperbVote.getPlugin().getVoteReminder().sendMessage(event.getPlayer(), context);
+                    SuperbVote.getPlugin().getVoteReminder().run(event.getPlayer(), context);
             }
 
             // Extra join reminder

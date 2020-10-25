@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+// Too lazy adding something to VoteReminder, this was faster and easier.
 public class JoinReminder {
 
     private final SuperbVote plugin;
@@ -29,7 +30,8 @@ public class JoinReminder {
 
     public void run(Player player, MessageContext messageContext) {
 
-        if (!condition.test(player)) return;
+        if (!condition.test(player))
+            return;
 
         for (String command : commands) {
             PlainStringMessage cmd = new PlainStringMessage(command);
