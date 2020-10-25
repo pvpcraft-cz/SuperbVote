@@ -431,7 +431,8 @@ public class SuperbVoteCommand implements CommandExecutor {
                         Configuration cfg = new Configuration(SuperbVote.getPlugin(), "config");
 
                         Message message = cfg.getMessage("claim.claimed", new Message());
-                        message.replace("%remaining_votes%", String.valueOf(votes.size()))
+                        message.replace("%claimed_votes%", String.valueOf(claimed))
+                                .replace("%remaining_votes%", String.valueOf(votes.size()))
                                 .send(sender);
                     });
                 }
