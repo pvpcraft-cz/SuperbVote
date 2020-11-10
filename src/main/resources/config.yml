@@ -160,3 +160,6 @@ top-player-signs:
     - ""
     - "%player%"
     - "&l%votes% &rvotes"
+
+# Change PlaceholderAPI identifier
+placeholder-identifier: 'superbvote'

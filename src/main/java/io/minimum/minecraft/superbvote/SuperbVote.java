@@ -126,14 +126,16 @@ public class SuperbVote extends JavaPlugin {
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("Using clip's PlaceholderAPI to provide extra placeholders.");
 
-            if (placeholders == null) {
-                this.placeholders = new SuperbVotePlaceholders(this);
-            }
-
-            if (PlaceholderAPI.isRegistered("superbvote") &&
+            if (placeholders != null &&
+                    PlaceholderAPI.isRegistered(placeholders.getIdentifier()) &&
                     VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) < 1) {
                 this.placeholders.unregister();
                 getLogger().info("Unregistered old expansion.");
+                this.placeholders = null;
+            }
+
+            if (placeholders == null) {
+                this.placeholders = new SuperbVotePlaceholders(this, getConfig().getString("placeholder-identifier", "superbvote"));
             }
 
             if (getConfig().getBoolean("top-cache.enabled")) {

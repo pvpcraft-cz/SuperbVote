@@ -19,9 +19,11 @@ public class SuperbVotePlaceholders extends PlaceholderExpansion {
 
     private final SuperbVote plugin;
 
+    private final String identifier;
+
     @Override
     public @NotNull String getIdentifier() {
-        return "superbvote";
+        return identifier;
     }
 
     @Override
