@@ -74,7 +74,7 @@
         </repository>
         <repository>
             <id>devport</id>
-            <url>http://play.pvpcraft.cz:8081/repository/devport/</url>
+            <url>https://nexus.pvpcraft.cz/repository/devport/</url>
         </repository>
     </repositories>
 
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.2-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -94,13 +94,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>space.devport.utils</groupId>
-            <artifactId>DevportUtils</artifactId>
-            <version>LATEST</version>
+            <artifactId>devportutils</artifactId>
+            <version>3.6.1</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.vexsoftware</groupId>
